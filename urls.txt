@@ -1,0 +1,37 @@
+#composite win
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=cwaodds&date=2022-04-27&venue=HV'
+
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=qpl&date=2022-04-27&venue=HV&raceno=8'
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=fct&date=2022-04-27&venue=HV&raceno=8'
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=fct&date=2022-04-27&venue=HV&raceno=8'
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=tceinv&date=2022-04-27&venue=HV&raceno=8'
+
+#just win.
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=winodds&date=2022-04-27&venue=HV&start=8&end=8'
+
+#win and place odds
+race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=winplaodds&date=2022-04-27&venue=HV&start=8&end=8'
+
+
+#race results
+https://quote.telecomdigital.cc/RacingOdds/api/raceResult.do?meeting_date=010522&venue=ST&race_no=1
+
+date field is DDMMYY
+?meeting_date=010522&venue=ST&race_no=1
+
+get winning pay outs.
+220501123703MTG_20220501_0001RACE_20220501_0011010522ST1CWA22$29.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1F-F11-3-6-7$295.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1FCT11-7$173.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1PLA11$18.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1PLA27$10.10220501123703MTG_20220501_0001RACE_20220501_0011010522ST1PLA36$20.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1QIN11-7$39.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1QPL11-7$18.50220501123703MTG_20220501_0001RACE_20220501_0011010522ST1QPL21-6$54.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1QPL36-7$20.50220501123703MTG_20220501_0001RACE_20220501_0011010522ST1QTT11-7-6-3$5144.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1TCE11-7-6$593.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1TRI11-6-7$85.00220501123703MTG_20220501_0001RACE_20220501_0011010522ST1WIN11$84.50
+
+
+race card for post time? and count the number of buttons for number of races.
+https://racing.hkjc.com/racing/information/english/Racing/Racecard.aspx
+
+starters? doesn't seem to work.
+http://bet.hkjc.com/racing/getXML.aspx?type=starters&lang=eng&RaceNo=1
+
+
+jockey challenge odds 
+
+
+https://bet.hkjc.com/racing/getJSON.aspx?type=jkc&date=2022-05-15&venue=ST
+

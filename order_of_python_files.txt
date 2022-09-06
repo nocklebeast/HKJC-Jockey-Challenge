@@ -1,0 +1,24 @@
+
+edit and run
+race_parameters.py  
+
+#fetches odds from hkjc.com, AND jockey challenge odds/info.
+hkjc_fetch_odds_selenium.py 
+
+
+### only need to do once 
+hkjc_process_jky.py (do for each update of the jockey challenge odds)
+(only do below once.  maps jockey names to jockey selection numbers for each race)
+hkjc_fetch_race_jockeys.py  
+
+
+
+
+hkjc_process_tierce_investments.py (public model tierce)
+
+jockey_challenge.py
+ 
+	(should split jockey challenge code from above)
+
+PrettyJKC.py
+
