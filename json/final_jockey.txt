@@ -1,0 +1,54 @@
+{"STAGE":"5","MEETING_DT":"2022-05-15","MEETING_DT_S":"15052022","DAY":"SUN","VENUE":"ST","OTHER_NO":"14","CLOSE":"1","SELL_STATUS":"2","EXP_START_DT":"20220514170000","EXP_STOP_DT":"20220515163500","INPLAYUPTO":"8","SSRACENUM":"8","SSRACESTAT":"1","REFUND":"0","FIRST_RACE":"1","LAST_RACE":"10","EXCLUDE_RACE":"","ODDS_UPD_DT":"20220515172111","S":"|3|2|6|1|5|8|9|4|10|7|11|12|13|14@@@|SHB|TEK|HEL|PZ|CML|BHW|LDE|BA|MMR|HCY|CLR|BV|HAA|OTHER@@@|B Shinn|K Teetan|L Hewitson|Z Purton|M Chadwick|H Bentley|K C Leung|A Badel|R Maia|C Y Ho|L Currie|V Borges|A Hamelin|Others@@@|薛恩|田泰安|希威森|潘頓|蔡明紹|班德禮|梁家俊|巴度|馬雅|何澤堯|嘉里|波健士|賀銘年|其他騎師@@@|1|1|1|1|1|1|1|1|1|1|2|2|2|2@@@|1|1|1|1|1|1|1|1|1|1|0|0|0|0@@@|6.50|6.00|18.0|2.00|11.0|30|30|7.00|30|28|35|250|400|300@@@|1.50|4.00|10.0|13.0|20|40|45|150|200|600|600|LSE|LSE|1500@@@|1.50|4.00|10.0|13.0|20|40|45|150|200|600|LSE|LSE|LSE|LSE@@@|28|31|16|18|12|16|24|27|22|10|0|0|0|10@@@|9|9|8|10|9|6|6|9|7|8|7|4|5|---@@@|0|0|0|0|0|0|0|0|0|0|0|0|0|---","OS":"|K H Chan|H T Mo|L Ferraris|C Wong|H W Lai@@@|陳嘉熙|巫顯東|霍宏聲|黃俊|黎海榮@@@|CHA|MHT|FEL|WCV|LHW@@@|10|6|0|0|0@@@|5|3|4|4|2@@@|0|0|0|0|0","updResultRaceNo":10}
+
+
+
+
+
+{"STAGE":"5",
+"MEETING_DT":"2022-05-15",
+"MEETING_DT_S":"15052022",
+"DAY":"SUN",
+"VENUE":"ST",
+"OTHER_NO":"14",
+"CLOSE":"1",
+"SELL_STATUS":"2",
+"EXP_START_DT":"20220514170000",
+"EXP_STOP_DT":"20220515163500",
+"INPLAYUPTO":"8",
+"SSRACENUM":"8",
+"SSRACESTAT":"1",
+"REFUND":"0",
+"FIRST_RACE":"1",
+"LAST_RACE":"10",
+"EXCLUDE_RACE":"",
+"ODDS_UPD_DT":"20220515172111",
+"S":"|3|2|6|1|5|8|9|4|10|7|11|12|13|14@@@
+	|SHB|TEK|HEL|PZ|CML|BHW|LDE|BA|MMR|HCY|CLR|BV|HAA|OTHER@@@
+	|B Shinn|K Teetan|L Hewitson|Z Purton|M Chadwick|H Bentley|K C Leung|A Badel|R Maia|C Y Ho|L Currie|V Borges|A Hamelin|Others@@@
+	|薛恩|田泰安|希威森|潘頓|蔡明紹|班德禮|梁家俊|巴度|馬雅|何澤堯|嘉里|波健士|賀銘年|其他騎師@@@
+	|1|1|1|1|1|1|1|1|1|1|2|2|2|2@@@
+	|1|1|1|1|1|1|1|1|1|1|0|0|0|0@@@
+	|6.50|6.00|18.0|2.00|11.0|30|30|7.00|30|28|35|250|400|300@@@
+	|1.50|4.00|10.0|13.0|20|40|45|150|200|600|600|LSE|LSE|1500@@@
+	|1.50|4.00|10.0|13.0|20|40|45|150|200|600|LSE|LSE|LSE|LSE@@@
+	|28|31|16|18|12|16|24|27|22|10|0|0|0|10@@@
+	|9|9|8|10|9|6|6|9|7|8|7|4|5|---@@@
+	|0|0|0|0|0|0|0|0|0|0|0|0|0|---",
+"OS":"|K H Chan|H T Mo|L Ferraris|C Wong|H W Lai@@@|陳嘉熙|巫顯東|霍宏聲|黃俊|黎海榮@@@
+|CHA|MHT|FEL|WCV|LHW@@@|10|6|0|0|0@@@|5|3|4|4|2@@@|0|0|0|0|0",
+"updResultRaceNo":10}
+
+"S" for Selection.  the first numbers are teh "jockey number" or selection
+next abbreviated jockey names
+next, jockey names
+next, chinese jockey names,
+next numbers are ?????
+next numbera are also mysterious.
+next numbers are proably opening odds
+next numbers are probably previous odds?  with "LSE" = Out, as in "out of connention, mathematically impossible to win"
+next are closing odds?
+next are jockey points
+next are something?
+next are remaining rides?
+
+"OS" is Other selections... just a list of the other jockeys... they all have selection as "other_no"
