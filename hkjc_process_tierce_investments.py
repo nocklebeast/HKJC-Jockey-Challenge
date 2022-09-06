@@ -1,5 +1,3 @@
-
-
 from xml.etree.ElementTree import TreeBuilder
 import pandas as pd
 import numpy as np
@@ -210,12 +208,6 @@ for iRace in range(firstRace,lastRace+1) :
     print(yTemp)
     print(zTemp)
 
-    #let's NOT merge on trifecta (model) chance.
-    #path_to_file = path_to_directory + 'TrifectaChance' + sRace + '.csv' 
-    #TrifectaModelChance = pd.read_csv(path_to_file) 
-    #TrifectaModelChance.drop(['xyExacta', 'xzExacta', 'yzExacta','TriChLn','ModelPay'], axis=1, inplace=True)
-    #print(TrifectaModelChance.head())
-
     path_to_file = path_to_directory + 'xyzTierce' + sRace + '.csv' 
     TierceInvestmentChance = pd.read_csv(path_to_file) 
     TierceInvestmentChance.drop(['Pay', 'TierceChanceX', 'PayX','T1Ch_x','T1Ch_y','T1Ch_z', \
@@ -223,16 +215,14 @@ for iRace in range(firstRace,lastRace+1) :
                                     ], axis=1, inplace=True)
     print(TierceInvestmentChance.head())
 
-    #JockeyTierce = pd.merge(TrifectaModelChance,TierceInvestmentChance, \
+    #don't merge on tri model chance. JockeyTierce = pd.merge(TrifectaModelChance,TierceInvestmentChance, \
     #                        on=['Race', 'horseno_x','horseno_y','horseno_z'], how='inner')
 
     JockeyTierce = TierceInvestmentChance.copy(deep=True)
 
-    #JockeyTierce['Equity'] = JockeyTierce['TriCh'] / JockeyTierce['TierceChance'] - 1
     print(JockeyTierce.head())
     AllTotals = JockeyTierce.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
     print(AllTotals)
-    #JockeyTierce.drop(columns='Equity',inplace=True)
     JockeyTierce.rename(columns={'TierceChance':'TierceCh'}, inplace=True)
 
     #now we'll want to merge in the jockey selction numbers (x y and z)
@@ -262,7 +252,7 @@ for iRace in range(firstRace,lastRace+1) :
 
     JockeyTierce = JockeyTierce.reindex(columns=['Race','horseno_x','horseno_y', 'horseno_z', \
                                         'jockeyno_x','jockeyno_y', 'jockeyno_z', \
-                                        'TriCh', 'TierceCh'])
+                                        'TierceCh'])
 
     JockeyTierce.rename(columns={'horseno_x':'Hx','jockeyno_x':'Jx', \
                                 'horseno_y':'Hy','jockeyno_y':'Jy', \

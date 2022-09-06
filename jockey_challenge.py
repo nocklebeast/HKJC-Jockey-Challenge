@@ -6,6 +6,7 @@
 
 import pandas as pd
 import numpy as np
+import os 
 
 pd.set_option('display.max_rows',None)
 
@@ -13,7 +14,10 @@ np.random.seed(10)
 
 nUnbrokenTies = 0
 
-path_to_directory = 'M:\\python\\hkjc\\odds_files\\'
+cwd = os.getcwd()
+print("My current directory is : " + cwd)
+path_to_directory = cwd + '\\odds_files\\'
+print(path_to_directory)
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
@@ -57,11 +61,9 @@ for iRace in range(firstRace,lastRace+1) :
 
 #end iRace
 
-JockeyTierceChance['CumTriCh'] = JockeyTierceChance[['Race','TriCh']].groupby('Race').cumsum()
 JockeyTierceChance['CumTierceCh'] = JockeyTierceChance[['Race','TierceCh']].groupby('Race').cumsum()
 
 #default is to shift one down with NaN as the 1st thing of the group.
-JockeyTierceChance['ShiftTriCh'] = JockeyTierceChance.groupby('Race')['CumTriCh'].shift()
 JockeyTierceChance['ShiftTierceCh'] = JockeyTierceChance.groupby('Race')['CumTierceCh'].shift()
 JockeyTierceChance.fillna(0,inplace=True)
 print(JockeyTierceChance.head())
@@ -79,7 +81,7 @@ for iter in range(nSims):
         print(SimJockeyPoints)
         print("pctSims = " + str(iter/nSims) )
 
-    ###################### throw the darts at each race (groupby) ############
+    ###################### throw the darts at each race (groupby Race) ############
     # (do not use groupby('Race).sample, as that gives an equal chance to each trifecta combo not proportional to chance.)
     JockeyTierce = JockeyTierceChance.copy(deep=True)
     JockeyTierce['dart'] = JockeyTierce.groupby('Race').Race.transform(func = lambda x : np.random.random())
@@ -99,7 +101,7 @@ for iter in range(nSims):
     #print(JockeyTierce.tail())
 
     Points = JockeyTierce.copy(deep=True)
-    Points.drop(['Race','Hx','Hy','Hz','TriCh','TierceCh','CumTriCh','ShiftTriCh','CumTierceCh','ShiftTierceCh','dart','winner'], axis=1, inplace=True)
+    Points.drop(['Race','Hx','Hy','Hz','TierceCh','CumTierceCh','ShiftTierceCh','dart','winner'], axis=1, inplace=True)
 
     Points1 = Points.copy(deep=True)
     Points1['Points1'] = 12 * Points['bWinner']

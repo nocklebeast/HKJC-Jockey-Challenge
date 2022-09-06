@@ -5,10 +5,10 @@ race_parameters.py
 #fetches odds from hkjc.com, AND jockey challenge odds/info.
 hkjc_fetch_odds_selenium.py 
 
+#(do for each update of the jockey challenge odds)
+hkjc_process_jky.py 
 
-### only need to do once 
-hkjc_process_jky.py (do for each update of the jockey challenge odds)
-(only do below once.  maps jockey names to jockey selection numbers for each race)
+#only do below once.  maps jockey names to jockey selection numbers for each race)
 hkjc_fetch_race_jockeys.py  
 
 

@@ -4,10 +4,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns 
+import os
 
 pd.set_option('display.max_rows',None)
 
-path_to_directory = 'M:\\python\\hkjc\\odds_files\\'
+cwd = os.getcwd()
+print("My current directory is : " + cwd)
+path_to_directory = cwd + '\\odds_files\\'
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
