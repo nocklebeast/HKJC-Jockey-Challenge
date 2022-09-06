@@ -89,9 +89,7 @@ for iter in range(nSims):
     #JockeyTierce['winner'] = JockeyTierce['dart'] > JockeyTierce['ShiftTriCh'] and JockeyTierce['dart'] < JockeyTierce['CumTriCh']
     #  
     #python note: below works https://stackoverflow.com/questions/30912403/appending-boolean-column-in-panda-dataframe
-    #our trifecta model chances (based on ex = w x qp x q) is probably more accurate than tierce investment chances
-    # although skewed towards favorites. (TriCh vs TierceCh)
-    # use trifacta chances based on Wx x Qxy x Wy public win and quinella odds.
+
     #JockeyTierce['winner'] = (JockeyTierce['dart'] > JockeyTierce['ShiftTriCh']) & (JockeyTierce['dart'] < JockeyTierce['CumTriCh']) 
     # use trifecta changes basedon public tierce investments?
     JockeyTierce['winner'] = (JockeyTierce['dart'] > JockeyTierce['ShiftTierceCh']) & (JockeyTierce['dart'] < JockeyTierce['CumTierceCh']) 
