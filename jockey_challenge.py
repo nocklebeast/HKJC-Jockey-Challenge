@@ -10,7 +10,7 @@ import os
 
 pd.set_option('display.max_rows',None)
 
-np.random.seed(10)
+np.random.seed(15000)
 
 nUnbrokenTies = 0
 
@@ -61,12 +61,12 @@ for iRace in range(firstRace,lastRace+1) :
 
 #end iRace
 
-JockeyTierceChance['CumTierceCh'] = JockeyTierceChance[['Race','TierceCh']].groupby('Race').cumsum()
+#JockeyTierceChance['CumTierceCh'] = JockeyTierceChance[['Race','TierceCh']].groupby('Race').cumsum()
 
 #default is to shift one down with NaN as the 1st thing of the group.
-JockeyTierceChance['ShiftTierceCh'] = JockeyTierceChance.groupby('Race')['CumTierceCh'].shift()
-JockeyTierceChance.fillna(0,inplace=True)
-print(JockeyTierceChance.head())
+#JockeyTierceChance['ShiftTierceCh'] = JockeyTierceChance.groupby('Race')['CumTierceCh'].shift()
+#JockeyTierceChance.fillna(0,inplace=True)
+#print(JockeyTierceChance.head())
 
 
 #run a race day's simulation nSims times.
@@ -81,25 +81,24 @@ for iter in range(nSims):
         print(SimJockeyPoints)
         print("pctSims = " + str(iter/nSims) )
 
-    ###################### throw the darts at each race (groupby Race) ############
-    # (do not use groupby('Race).sample, as that gives an equal chance to each trifecta combo not proportional to chance.)
-    JockeyTierce = JockeyTierceChance.copy(deep=True)
-    JockeyTierce['dart'] = JockeyTierce.groupby('Race').Race.transform(func = lambda x : np.random.random())
-    #python note: below does not work
-    #JockeyTierce['winner'] = JockeyTierce['dart'] > JockeyTierce['ShiftTriCh'] and JockeyTierce['dart'] < JockeyTierce['CumTriCh']
-    #  
-    #python note: below works https://stackoverflow.com/questions/30912403/appending-boolean-column-in-panda-dataframe
+    ###################### throw the darts at each race (groupby Race) with weights set as the tierce chance.############
+    #using 'TierceCh" as weight.... trifecta combos with higher chances are more likely to be sampled.
 
-    #JockeyTierce['winner'] = (JockeyTierce['dart'] > JockeyTierce['ShiftTriCh']) & (JockeyTierce['dart'] < JockeyTierce['CumTriCh']) 
-    # use trifecta changes basedon public tierce investments?
-    JockeyTierce['winner'] = (JockeyTierce['dart'] > JockeyTierce['ShiftTierceCh']) & (JockeyTierce['dart'] < JockeyTierce['CumTierceCh']) 
-    JockeyTierce['bWinner'] = JockeyTierce['winner'].astype(int)
-    #print(JockeyTierce)
+    JockeyTierce = JockeyTierceChance.copy(deep=True)
+    # select a single winning trifecta combination for each race.
+    simulated_winners = JockeyTierce.groupby('Race').sample(n=1,weights='TierceCh')
+    simulated_winners['bWinner'] = 1
+    #just keep the winner column, then merge back into JockeyTierceChance.
+    simulated_winners = simulated_winners['bWinner']
+    #left join winners onto JockeyTierceChance
+    JockeyTierce = pd.merge(JockeyTierce,simulated_winners, left_index=True, right_index=True, how='left')
+    JockeyTierce['bWinner'].fillna(0,inplace=True)
+    JockeyTierce['bWinner'] = JockeyTierce['bWinner'].astype(int)
     #print(JockeyTierce.head())
-    #print(JockeyTierce.tail())
 
     Points = JockeyTierce.copy(deep=True)
-    Points.drop(['Race','Hx','Hy','Hz','TierceCh','CumTierceCh','ShiftTierceCh','dart','winner'], axis=1, inplace=True)
+    #Points.drop(['Race','Hx','Hy','Hz','TierceCh','CumTierceCh','ShiftTierceCh','dart','winner'], axis=1, inplace=True)
+    Points.drop(['Race','Hx','Hy','Hz','TierceCh'], axis=1, inplace=True)
 
     Points1 = Points.copy(deep=True)
     Points1['Points1'] = 12 * Points['bWinner']
@@ -109,7 +108,6 @@ for iter in range(nSims):
     RaceDayPoints1 = Points1.groupby(['JockeyNumber']).sum().reset_index()
     RaceDayPoints1.rename(columns = {'bWinner':'nWins'}, inplace=True)
     #print(RaceDayPoints1)
-    
 
     Points2 = Points.copy(deep=True)
     Points2['Points2'] = 6 * Points['bWinner']
