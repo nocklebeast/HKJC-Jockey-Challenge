@@ -10,7 +10,7 @@ import os
 
 pd.set_option('display.max_rows',None)
 
-np.random.seed(15000)
+np.random.seed(10)
 
 nUnbrokenTies = 0
 
@@ -57,17 +57,18 @@ for iRace in range(firstRace,lastRace+1) :
 
     JockeyTierceChance = pd.concat([JockeyTierceChance, tempJockeyTierce], ignore_index=True )
     #print(JockeyTierceChance.head())
-    #print(JockeyTierceChance.tail())
-
 #end iRace
 
+# let's not do the weighted select by hand.
 #JockeyTierceChance['CumTierceCh'] = JockeyTierceChance[['Race','TierceCh']].groupby('Race').cumsum()
-
-#default is to shift one down with NaN as the 1st thing of the group.
+# default is to shift one down with NaN as the 1st thing of the group.
 #JockeyTierceChance['ShiftTierceCh'] = JockeyTierceChance.groupby('Race')['CumTierceCh'].shift()
 #JockeyTierceChance.fillna(0,inplace=True)
-#print(JockeyTierceChance.head())
-
+#
+# Note, sorting the array (but keeping the random seed constant) slightly alters the results.
+#JockeyTierceChance.sort_values(by=['Race','TierceCh'], inplace=True)
+# select with weights below must be implemented similarly as calculating a cumulative chance above
+# (because I got the same result as above method as select with weights methods with the same random seed)
 
 #run a race day's simulation nSims times.
 nSims = 10000

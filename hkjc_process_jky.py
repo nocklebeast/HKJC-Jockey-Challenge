@@ -1,9 +1,10 @@
-
 #process jockey odds info from jockey challenge
 
+from calendar import isleap
 import pandas as pd
 import numpy as np
 import os
+import json
 
 pd.set_option('display.max_rows',None)
 
@@ -17,116 +18,59 @@ path_to_file = path_to_directory + 'jkc.txt'
 
 with open(path_to_file,mode='r', encoding='utf-8') as oddsFile:
     sRawJockey = oddsFile.read()
-oddsFile.close()
 #print(sRawJockey)
+sJockey = sRawJockey
+dJockeyInfo = json.loads(sJockey)
 
-#remove first { and last ]
-iPos = sRawJockey.find("{",0)
-jPos = sRawJockey.find("}",iPos+1)
-sJockey = sRawJockey[iPos+1 : jPos]
+#print(dJockeyInfo)
+#for kJockey, vJockey in dJockeyInfo.items():
+#    print(kJockey, vJockey)
 
-# it might be useful to strip out all the " (do we really need all that?)
-sJockey = sJockey.replace('"','')
-print(sJockey)
+#list of dictionaries corresponding to each jockey with a "non-other" jockey/selection number.
+lSelections = dJockeyInfo.get('S')
 
-dctJockeyInfo = dict( keyValue.split(":") for keyValue in sJockey.split(",") )
-#print(dctJockeyInfo)
-for kJockey, vJockey in dctJockeyInfo.items():
-    print(kJockey, vJockey)
+#below gives a dataframe with keys as the columns, but the elements are not list/arrays so we get and empty dataframe.
+#newdf = pd.DataFrame.from_dict(lSelections[0])
+#convert each element to a list, to get from_dict() to work.
 
-sSelections = dctJockeyInfo.get('S')
-#print (sSelections)
-lSelections = sSelections.split("@@@")
-#print(lSelections)
+#create empty dataframe with the correct columns, will concat to later.
+dfJockeys = pd.DataFrame(columns=lSelections[0].keys())
 
-#jockey selection/numbers
-#strip leading | from strings to avoid empty elements
-sJockeyNumbers = lSelections[0]
-sJockeyNumbers = sJockeyNumbers.replace("|", " ", 1)
-sJockeyNumbers = sJockeyNumbers.strip()
-#print(sJockeyNumbers)
-lNumbers = sJockeyNumbers.split('|')
-#print(lNumbers)
-jNumbers = np.array(lNumbers, dtype=np.int8)
-#print(jNumbers)
-dfJNum = pd.DataFrame(jNumbers,columns=['JockeyNumber'])
-#print(dfJNum)
+for iSelection in range(0,len(lSelections)  ):
+    #print( lSelections[iSelection])
+    #convert to dictionary with elements as lists.
+    dSingleJockey = dict()
+    for kJockey, vJockey in lSelections[iSelection].items():
+        #print(kJockey, vJockey)
+        lOneThing = list()
+        lOneThing.append(vJockey)
+        dSingleJockey[kJockey] = lOneThing
+    dfSingleJockey = pd.DataFrame.from_dict(dSingleJockey)
+    #print(dfSingleJockey)
+    dfJockeys = pd.concat([dfJockeys,dfSingleJockey],axis=0)
+    #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
 
+dfJockeys.drop(['nameCH'],axis= 1, inplace=True  )
+dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace='---',value='0')
+dfJockeys['Points'] = dfJockeys['Points'].astype(int)
 
-### get jockey names
-#strip leading | from strings to avoid empty elements
-sJockeyNames = lSelections[2]
-sJockeyNames = sJockeyNames.replace("|", " ", 1)
-sJockeyNames = sJockeyNames.strip()
-lJockeyNames = sJockeyNames.split('|')
-jNames = np.array(lJockeyNames)
-dfJName = pd.DataFrame(jNames,columns=['jockeyName'])
+dfJockeys.rename(columns={'num':'JockeyNumber','nameEN':'jockeyName','opOdds':'OpeningOdds'}, inplace=True)
+dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','Points':'JockeyPoints'}, inplace=True)
+dfJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
+dfJockeys['Rides'] = dfJockeys['Rides'].astype(int)
+dfJockeys.drop(['code','status','sStatus','order','combId','lineId','betSelDetails'],axis=1, inplace=True)
 
-### get opening odds 
-#strip leading | from strings to avoid empty elements
-sOpeningOdds = lSelections[6]
-sOpeningOdds = sOpeningOdds.replace("|", " ", 1)
-sOpeningOdds = sOpeningOdds.strip()
-lOpeningOdds = sOpeningOdds.split('|')
-aOpeningOdds = np.array(lOpeningOdds)
-dfOpeningOdds = pd.DataFrame(aOpeningOdds,columns=['OpeningOdds'])
-
-### get Previous odds 
-#strip leading | from strings to avoid empty elements
-sPreviousOdds = lSelections[7]
-sPreviousOdds = sPreviousOdds.replace("|", " ", 1)
-sPreviousOdds = sPreviousOdds.strip()
-lPreviousOdds = sPreviousOdds.split('|')
-aPreviousOdds = np.array(lPreviousOdds)
-dfPreviousOdds = pd.DataFrame(aPreviousOdds,columns=['PreviousOdds'])
-
-### get Current odds 
-#strip leading | from strings to avoid empty elements
-sCurrentOdds = lSelections[8]
-sCurrentOdds = sCurrentOdds.replace("|", " ", 1)
-sCurrentOdds = sCurrentOdds.strip()
-lCurrentOdds = sCurrentOdds.split('|')
-aCurrentOdds = np.array(lCurrentOdds)
-dfCurrentOdds = pd.DataFrame(aCurrentOdds,columns=['CurrentOdds'])
-
-### get Jocky Points  
-#strip leading | from strings to avoid empty elements
-sPoints = lSelections[9]
-sPoints = sPoints.replace("|", " ", 1)
-#replace "---" points with "0"
-sPoints = sPoints.replace("---","0")
-sPoints = sPoints.strip()
-lPoints = sPoints.split('|')
-aPoints = np.array(lPoints)
-dfPoints = pd.DataFrame(aPoints,columns=['JockeyPoints'])
-#print(dfPoints)
-
-### get Jocky Rides  
-#strip leading | from strings to avoid empty elements
-sRides = lSelections[10]
-sRides = sRides.replace("|", " ", 1)
-sRides = sRides.strip()
-lRides = sRides.split('|')
-aRides = np.array(lRides)
-dfRides = pd.DataFrame(aRides,columns=['Rides'])
-
-
-dfJockeys = pd.concat([dfJNum,dfJName,dfCurrentOdds,dfPoints,dfOpeningOdds,dfPreviousOdds,dfRides], axis=1)
+dfJockeys['inPlayUpTo'] = dJockeyInfo.get('INPLAYUPTO')
+dfJockeys['stage'] = dJockeyInfo.get('STAGE')
+dfJockeys['close'] = dJockeyInfo.get('CLOSE')
+dfJockeys['firstRace'] = dJockeyInfo.get('FIRST_RACE')
+dfJockeys['lastRace'] = dJockeyInfo.get('LAST_RACE')
+dfJockeys['excludeRace'] = dJockeyInfo.get('EXCLUDE_RACE')
+dfJockeys['OtherNumber'] = dJockeyInfo.get('OTHER_NO')
+dfJockeys['updResultRaceNo'] = dJockeyInfo.get('updResultRaceNo')
+#print("dfJockeys")
 #print(dfJockeys)
-
-dfJockeys['inPlayUpTo'] = dctJockeyInfo.get('INPLAYUPTO')
-dfJockeys['stage'] = dctJockeyInfo.get('STAGE')
-dfJockeys['close'] = dctJockeyInfo.get('CLOSE')
-dfJockeys['firstRace'] = dctJockeyInfo.get('FIRST_RACE')
-dfJockeys['lastRace'] = dctJockeyInfo.get('LAST_RACE')
-dfJockeys['excludeRace'] = dctJockeyInfo.get('EXCLUDE_RACE')
-dfJockeys['OtherNumber'] = dctJockeyInfo.get('OTHER_NO')
-dfJockeys['updResultRaceNo'] = dctJockeyInfo.get('updResultRaceNo')
-print("dfJockeys")
-print(dfJockeys)
 dfJockeys.to_csv(path_to_directory + 'dfJockeys' + '.csv', index=False)
-
-
 
 JockeySelections = dfJockeys.copy(deep=True)
 #
@@ -134,46 +78,41 @@ JockeySelections.drop(['OpeningOdds', 'inPlayUpTo', 'stage', \
                 'close', 'firstRace', 'excludeRace', \
                 'Rides', 'lastRace', \
                 'updResultRaceNo', 'PreviousOdds' ], axis=1, inplace=True)
-"""
-JockeySelections.drop(['OpeningOdds', 'inPlayUpTo', 'stage', \
-                'close', 'firstRace', 'excludeRace', \
-                'Points', 'Rides', 'lastRace', \
-                'updResultRaceNo', 'PreviousOdds', 'CurrentOdds' ], axis=1, inplace=True)
-"""
 print("JockeySelections")
 print(JockeySelections)
 JockeySelections.to_csv(path_to_directory + 'JockeySelections' + '.csv', index=False)
 
-
-sOther = dctJockeyInfo.get('OS')
-print (sOther)
-lOther = sOther.split("@@@")
-#print(lOther)
-
 #other jockeys  
-### get jockey names
-#strip leading | from strings to avoid empty elements
-sJockeyNames = lOther[0]
-sJockeyNames = sJockeyNames.replace("|", " ", 1)
-sJockeyNames = sJockeyNames.strip()
-lJockeyNames = sJockeyNames.split('|')
-jNames = np.array(lJockeyNames)
-dfJName = pd.DataFrame(jNames,columns=['jockeyName'])
+#list of dictionaries corresponding to each jockey with a "other" jockey/selection number.
+lOther = dJockeyInfo.get('OS')
 
-### get Jocky Rides  
-#strip leading | from strings to avoid empty elements
-sRides = lOther[4]
-sRides = sRides.replace("|", " ", 1)
-sRides = sRides.strip()
-lRides = sRides.split('|')
-aRides = np.array(lRides)
-dfRides = pd.DataFrame(aRides,columns=['Rides'])
+print(lOther)
+#create empty dataframe with the correct columns, will concat to later.
+dfOtherJockeys = pd.DataFrame(columns=lOther[0].keys())
 
-dfOtherJockeys = pd.concat([dfJName,dfRides], axis=1)
-dfOtherJockeys['JockeyNumber'] = dctJockeyInfo.get('OTHER_NO')
-print("dfOtherJockeys")
+for iOther in range(0,len(lOther)  ):
+    dSingleJockey = dict()
+    for kJockey, vJockey in lOther[iOther].items():
+        #print(kJockey, vJockey)
+        lOneThing = list()
+        lOneThing.append(vJockey)
+        dSingleJockey[kJockey] = lOneThing
+    dfSingleJockey = pd.DataFrame.from_dict(dSingleJockey)
+    #print(dfSingleJockey)
+    dfOtherJockeys = pd.concat([dfOtherJockeys,dfSingleJockey],axis=0)
+    #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
+
+
+dfOtherJockeys.drop(['nameCH',],axis= 1, inplace=True  )
+dfOtherJockeys.rename(columns={'num':'JockeyNumber','nameEN':'JockeyName'}, inplace=True)
+dfOtherJockeys['JockeyNumber'] = dJockeyInfo.get('OTHER_NO')
+dfOtherJockeys.drop(['code','order','betSelDetails'],axis=1, inplace=True)
+dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace='---',value='0')
+dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
+dfOtherJockeys.rename(columns={'Points':'JockeyPoints'}, inplace=True)
+dfOtherJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
+#dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
 print(dfOtherJockeys)
-
 
 OtherJockeySelections = dfOtherJockeys.copy(deep=True)
 OtherJockeySelections.drop(['Rides'], axis=1, inplace=True)

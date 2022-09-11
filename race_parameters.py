@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 
-data={'sRace':['5'], 'firstRace':['5'], 'lastRace':['11'], 'sDate':['2022-07-16'], 'sVenue':['ST'] }
+data={'sRace':['1'], 'firstRace':['1'], 'lastRace':['10'], 'sDate':['2022-09-11'], 'sVenue':['ST'] }
 
 # Create DataFrame  
 race_parameters = pd.DataFrame(data)  

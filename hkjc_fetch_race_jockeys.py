@@ -25,14 +25,11 @@ from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
-#race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=winplaodds&date=2022-05-01&venue=ST&start=8&end=8'
-
-
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
 
-path_to_file = path_to_directory + 'race_parameters' + '.csv'
+path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
 print(RaceParameters)
 

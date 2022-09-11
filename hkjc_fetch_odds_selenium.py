@@ -52,12 +52,16 @@ for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv']
     #let's only fetch odds we use for handicapping the jockey challenge.
-    lBetTypes=['tceinv']
+    #lBetTypes=[ 'winplaodds','tceinv']
+    lBetTypes=[ 'tceinv']
+    #'tcetop' is tierce top 20
+    #'tcebank' is tierce top 10 bankers.
+    #'trio' is full trio grid.
+    #lBetTypes=['winplaodds','tri'] 
 
     for sType in lBetTypes:
         print(sRace)
         print(sType)
-
 
         base_url = 'https://bet.hkjc.com/racing/getJSON.aspx' 
         isTypeStartEnd = (sType == 'winplaodds')
@@ -72,11 +76,6 @@ for iRace in range(firstRace,lastRace+1) :
             betParams['start'] = sRace
             betParams['end'] = sRace 
             sParams = sParams + '&start=' + sRace + '&end=' + sRace 
-
-        #print(sType)
-        #print(isTypeStartEnd)
-        #print(betParams)
-        #print(sParams)
 
         race_url = base_url + '?' + sParams
         print(race_url)
@@ -102,7 +101,7 @@ for iRace in range(firstRace,lastRace+1) :
         print(justText)
 
         #write text file of the string for later processing.
-        path_to_file = 'M:\\python\\hkjc\\odds_files\\' + sType + sRace + '.txt'
+        path_to_file = path_to_directory  + '\\' + sType + sRace + '.txt'
 
         with open(path_to_file,'w') as oddsFile:
             oddsFile.write(justText)
@@ -111,7 +110,6 @@ for iRace in range(firstRace,lastRace+1) :
     #end for loop on lBetTypes
 
 #end of for loop on iRace
-
 
 
 # now fetch jockey odds
@@ -147,9 +145,9 @@ justText = mySoup.get_text()
 print(justText)
 
 #write text file of the string for later processing.
-path_to_file = 'M:\\python\\hkjc\\odds_files\\' + sType + '.txt'
+path_to_file = path_to_directory  + '\\' + sType  + '.txt'
 
-#use encoding='utf-8' when wrting chinese characters?
+#use encoding='utf-8' when writing chinese characters.
 with open(path_to_file,'w',encoding='utf-8') as oddsFile:
     oddsFile.write(justText)
     oddsFile.close()
