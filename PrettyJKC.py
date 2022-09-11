@@ -97,7 +97,7 @@ axes[0].set_title(sPlotTitle)
 
 #create a simple/pretty dataframe for the odds table.
 PrettyOdds = PrettyJKC.copy(deep=True)
-PrettyOdds.drop(['JockeyNumber', 'Jockey Points','Expected Points','Chance'], axis=1, inplace=True)
+PrettyOdds.drop(['JockeyNumber', 'Jockey Points','Expected Points','Chance','RemainingRides'], axis=1, inplace=True)
 PrettyOdds.rename(columns={'Current Odds': 'Current HKJC Odds'}, inplace=True)
 print(PrettyOdds)
 
@@ -150,11 +150,16 @@ plt.savefig(path_to_file + '.png', transparent=False, edgecolor='none', dpi=100,
 plt.savefig(path_to_file + '.jpg', transparent=True, edgecolor='none', dpi=100, format='jpg') 
 plt.show()
 
+
+
 ### create a pie plot of chances the jockey will win the jockey challenge.
+PrettyJKC.drop(['RemainingRides'], axis=1, inplace=True)
+
 PieJKC = PrettyJKC.copy(deep=True)
 
-#remove low probability jockeys.  Keep jockeys greater than 1% chance.
-PieJKC = PieJKC[ PieJKC['Chance'] > 1 ]
+#remove low probability jockeys.  Keep jockeys greater than 2% chance.
+PieJKC = PieJKC[ PieJKC['Chance'] > 2 ]
+print(PieJKC)
 #replace last probablities with "The Rest"
 AllTotals = PieJKC.sum(axis=0)
 print(AllTotals)
@@ -167,6 +172,7 @@ plt.pie(PieJKC["Chance"],
         labels=PieJKC["Jockey"],
         autopct='%1.0f%%')
 
+
 sTitle = "Chance of Winning the Jockey Challenge"
 plt.suptitle(sTitle)
 if sVenue == "ST": 
@@ -178,6 +184,6 @@ plt.title(sSubTitle)
 
 plt.tight_layout()
 path_to_file = path_to_directory + 'jkc_odds' + '.jpg'
-#plt.savefig(path_to_file, transparent=True, facecolor='w')
-#plt.show()
+plt.savefig(path_to_file, transparent=True, facecolor='w')
+plt.show()
 

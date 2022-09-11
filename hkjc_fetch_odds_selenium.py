@@ -52,12 +52,12 @@ for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv']
     #let's only fetch odds we use for handicapping the jockey challenge.
-    #lBetTypes=[ 'winplaodds','tceinv']
-    lBetTypes=[ 'tceinv']
+    #'tceinv' is tierce investments.
     #'tcetop' is tierce top 20
     #'tcebank' is tierce top 10 bankers.
-    #'trio' is full trio grid.
-    #lBetTypes=['winplaodds','tri'] 
+    #'tri' is full trio grid.
+    lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
+    #lBetTypes=[ 'tceinv']
 
     for sType in lBetTypes:
         print(sRace)

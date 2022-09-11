@@ -28,6 +28,7 @@ dJockeyInfo = json.loads(sJockey)
 
 #list of dictionaries corresponding to each jockey with a "non-other" jockey/selection number.
 lSelections = dJockeyInfo.get('S')
+#print(lSelections)
 
 #below gives a dataframe with keys as the columns, but the elements are not list/arrays so we get and empty dataframe.
 #newdf = pd.DataFrame.from_dict(lSelections[0])
@@ -59,6 +60,9 @@ dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','P
 dfJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
 dfJockeys['Rides'] = dfJockeys['Rides'].astype(int)
 dfJockeys.drop(['code','status','sStatus','order','combId','lineId','betSelDetails'],axis=1, inplace=True)
+#FYI, there's a ton of info after the first race in betSelDetails... a sample
+#betSelDetails {'2': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 7, 'place4thDouble': 0.0}, '4': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 6, 'place4thDouble': 0.0}, '1': {'raceNo': 0, 'points': 12.0, 'place1st': 1, 'dh1st': False, 'point1st': 12.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 8, 'place4thDouble': 0.0}, '3': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 6, 'place4thDouble': 0.0}}
+#todo: could be useful for resolving ties on races that have already happened and we don't simulate.
 
 dfJockeys['inPlayUpTo'] = dJockeyInfo.get('INPLAYUPTO')
 dfJockeys['stage'] = dJockeyInfo.get('STAGE')
@@ -86,7 +90,7 @@ JockeySelections.to_csv(path_to_directory + 'JockeySelections' + '.csv', index=F
 #list of dictionaries corresponding to each jockey with a "other" jockey/selection number.
 lOther = dJockeyInfo.get('OS')
 
-print(lOther)
+#print(lOther)
 #create empty dataframe with the correct columns, will concat to later.
 dfOtherJockeys = pd.DataFrame(columns=lOther[0].keys())
 
@@ -99,6 +103,8 @@ for iOther in range(0,len(lOther)  ):
         dSingleJockey[kJockey] = lOneThing
     dfSingleJockey = pd.DataFrame.from_dict(dSingleJockey)
     #print(dfSingleJockey)
+    # do not know what negative points mean in the betSelDetails for individual other jockeys.
+    # has no implact on the total point calculation
     dfOtherJockeys = pd.concat([dfOtherJockeys,dfSingleJockey],axis=0)
     #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
 
@@ -112,7 +118,7 @@ dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
 dfOtherJockeys.rename(columns={'Points':'JockeyPoints'}, inplace=True)
 dfOtherJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
 #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
-print(dfOtherJockeys)
+#print(dfOtherJockeys)
 
 OtherJockeySelections = dfOtherJockeys.copy(deep=True)
 OtherJockeySelections.drop(['Rides'], axis=1, inplace=True)
