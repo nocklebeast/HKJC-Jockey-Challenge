@@ -15,6 +15,8 @@ Known issues/room for improvement:
 
 • As always, a more accurate trifecta model would result in a more predictive Monte Carlo simulation.
 
+• Should include path to odds directory in race parameters file.
+
 Sample output:
 
 (potential value plays are highlighted in green in the odds table.)
