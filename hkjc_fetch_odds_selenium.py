@@ -56,8 +56,8 @@ for iRace in range(firstRace,lastRace+1) :
     #'tcetop' is tierce top 20
     #'tcebank' is tierce top 10 bankers.
     #'tri' is full trio grid.
-    lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
-    #lBetTypes=[ 'tceinv']
+    #lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
+    lBetTypes=[ 'tceinv']
 
     for sType in lBetTypes:
         print(sRace)
@@ -113,41 +113,4 @@ for iRace in range(firstRace,lastRace+1) :
 
 
 # now fetch jockey odds
-
-#https://bet.hkjc.com/racing/getJSON.aspx?type=jkc&date=2022-05-15&venue=ST 
-base_url = 'https://bet.hkjc.com/racing/getJSON.aspx' 
-
-
-sType = "jkc"
-print(sType)
-sParams = 'type=' + sType + '&date=' + sDate + '&venue=' + sVenue  
-race_url = base_url + '?' + sParams
-print(race_url)
-
-WebDriverOptions = Options()
-WebDriverOptions.headless = True
-
-browser = webdriver.Firefox(options=WebDriverOptions)
-browser.get(race_url)
-time.sleep(3)
-#print("browser page source")
-#print(browser.page_source)
-txtPage = browser.page_source
-browser.close
-
-print(txtPage)
-
-mySoup = soup(txtPage, 'html.parser')
-#print(mySoup)
-#print("just the text")
-#besure to include the (), get something different otherwise.
-justText = mySoup.get_text()
-print(justText)
-
-#write text file of the string for later processing.
-path_to_file = path_to_directory  + '\\' + sType  + '.txt'
-
-#use encoding='utf-8' when writing chinese characters.
-with open(path_to_file,'w',encoding='utf-8') as oddsFile:
-    oddsFile.write(justText)
-    oddsFile.close()
+# fetch jockey challenge odds with hkjc_fetch_jkc.py

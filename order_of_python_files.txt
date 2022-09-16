@@ -2,22 +2,24 @@
 edit and run
 race_parameters.py  
 
-#fetches odds from hkjc.com, AND jockey challenge odds/info.
-hkjc_fetch_odds_selenium.py 
-
-#(do for each update of the jockey challenge odds, done in fetch_odds)
-hkjc_process_jky.py 
-
 #only do below once per race day.  
 # maps jockey names to jockey selection numbers for each race)
 hkjc_fetch_race_jockeys.py  
 
+#fetches (tierce) odds from hkjc.com,
+hkjc_fetch_odds_selenium.py 
+
+#fetches jockey challenge odds from hkjc.com
+hkjc_fetch_jkc.py
+
+hkjc_process_jky.py 
+ 
 hkjc_process_tierce_investments.py (public model tierce)
 
+#tierce pays and other odds are not used for jockey challenge for now.
 hkjc_process_tcebank.py
 hkjc_process_tcetop.py
 merge_tierce_pays.py
-
 
 jockey_challenge.py
 

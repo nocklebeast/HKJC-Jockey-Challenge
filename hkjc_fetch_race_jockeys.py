@@ -57,15 +57,9 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #browser = webdriver.Firefox()
 #browser = webdriver.Chrome(options=WebDriverOptions)
 
-#later, merge race entry(jockeys) with jockey selections
-JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
-print(JockeySelections)
-dfOtherNumber = JockeySelections[JockeySelections['jockeyName'] == 'Others']
-OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
-print(OtherNumber)
+
 
 for iRace in range(firstRace,lastRace+1) :
-
     sRace = str(iRace)
     print(sRace)
 
@@ -75,7 +69,6 @@ for iRace in range(firstRace,lastRace+1) :
     sParams = 'lang=' + 'en' + '&date=' + sDate + '&venue=' + sVenue + '@raceno=' + sRace
     race_url = base_url + '?' + sParams
     print(race_url)
-
 
     browser.get(race_url)
     #browser.get(race_url)
@@ -111,19 +104,15 @@ for iRace in range(firstRace,lastRace+1) :
     lRunners = sRunnerList.split("},{")
     print(lRunners[3])
 
-
     aRunners = np.array(lRunners)
     #print(aRunners)
     dfRunners = pd.DataFrame(aRunners,columns=['RaceEntry'], dtype='string')
-   
     #print(dfRunners)
 
     dfRunners['lRaceEntry'] = dfRunners['RaceEntry'].str.split(',')
     #print(dfRunners)
 
-
     df2 = pd.DataFrame(dfRunners['lRaceEntry'].to_list())
-    
     df2.drop([1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29], axis=1, inplace=True)
     #print(df2)
 
@@ -134,7 +123,6 @@ for iRace in range(firstRace,lastRace+1) :
 
     dfH2 = pd.DataFrame(dfHorse[0].to_list())
     dfJ2 = pd.DataFrame(dfJockey[9].to_list())
-
     #print(dfH2)
     #print(dfJ2)
 
@@ -157,7 +145,7 @@ for iRace in range(firstRace,lastRace+1) :
 
     RaceEntry['JockeyNumber'].fillna(OtherNumber,inplace=True)
     #deal with "other"
-    RaceEntry['JockeyNumber']   = RaceEntry['JockeyNumber'].astype(int)
+    RaceEntry['JockeyNumber'] = RaceEntry['JockeyNumber'].astype(int)
     RaceEntry.drop(['OtherNumber'], axis=1, inplace=True)
     #print(RaceEntry)    
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
@@ -192,7 +180,4 @@ for iRace in range(firstRace,lastRace+1) :
 
 #end of for loop on iRace
 
-
 browser.close
-
-

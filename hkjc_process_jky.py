@@ -37,6 +37,14 @@ lSelections = dJockeyInfo.get('S')
 #create empty dataframe with the correct columns, will concat to later.
 dfJockeys = pd.DataFrame(columns=lSelections[0].keys())
 
+"""
+could try this instead.
+#convert the series into a dictionary and then into a dataframe 
+#the dataframe conversion is expecting a dictionary of LISTS  (key:value=a list)
+#use index=[0] to convert the values into a list 
+#see https://www.geeksforgeeks.org/how-to-fix-if-using-all-scalar-values-you-must-pass-an-index/
+dctSingleOtherJockey = SingleOtherJockey.to_dict()
+"""
 for iSelection in range(0,len(lSelections)  ):
     #print( lSelections[iSelection])
     #convert to dictionary with elements as lists.
@@ -50,6 +58,8 @@ for iSelection in range(0,len(lSelections)  ):
     #print(dfSingleJockey)
     dfJockeys = pd.concat([dfJockeys,dfSingleJockey],axis=0)
     #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
+
+dfJockeys.to_csv(path_to_directory + 'RawJockeys' + '.csv', index=False)
 
 dfJockeys.drop(['nameCH'],axis= 1, inplace=True  )
 dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace='---',value='0')
@@ -108,13 +118,19 @@ for iOther in range(0,len(lOther)  ):
     dfOtherJockeys = pd.concat([dfOtherJockeys,dfSingleJockey],axis=0)
     #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
 
+dfOtherJockeys.to_csv(path_to_directory + 'RawOtherJockeys' + '.csv', index=False)
+
 
 dfOtherJockeys.drop(['nameCH',],axis= 1, inplace=True  )
-dfOtherJockeys.rename(columns={'num':'JockeyNumber','nameEN':'JockeyName'}, inplace=True)
+dfOtherJockeys.rename(columns={'num':'JockeyNumber','nameEN':'jockeyName'}, inplace=True)
 dfOtherJockeys['JockeyNumber'] = dJockeyInfo.get('OTHER_NO')
 dfOtherJockeys.drop(['code','order','betSelDetails'],axis=1, inplace=True)
 dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace='---',value='0')
 dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
+#sometimes jockey club reports other points as "-1" ???? just reset to 0 I think.
+dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace=-1,value=0)
+
+
 dfOtherJockeys.rename(columns={'Points':'JockeyPoints'}, inplace=True)
 dfOtherJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
 #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
@@ -127,4 +143,22 @@ print(OtherJockeySelections)
 OtherJockeySelections.to_csv(path_to_directory + 'OtherJockeySelections' + '.csv', index=False)
 
 
+#later, merge race entry(jockeys) with jockey selections
+#JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
+#print(JockeySelections)
+dfOtherNumber = JockeySelections[JockeySelections['jockeyName'] == 'Others']
+OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
+OtherOdds = dfOtherNumber['CurrentOdds'].loc[dfOtherNumber.index[0]]
+print(OtherNumber)
+print(OtherOdds)
+
+#let's also concat the Other Jockey Selections 
+# so that we can map all the other jockeys by their names to other number properly.
+OtherJockeySelections = pd.read_csv(path_to_directory + 'OtherJockeySelections' + '.csv')
+OtherJockeySelections['OtherNumber'] = OtherNumber
+AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
+#fill in the current Odds for other jockeys with the correct odds for others.
+AllJockeySelections['CurrentOdds'].fillna(OtherOdds,inplace=True)
+AllJockeySelections.to_csv(path_to_directory + 'AllJockeySelections' + '.csv', index=False)
+print(AllJockeySelections)
 

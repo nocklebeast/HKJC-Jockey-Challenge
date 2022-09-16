@@ -53,7 +53,6 @@ for iRace in range(firstRace,lastRace+1) :
     lHorses = sInvestments.split(";")
     print(lHorses)
 
-
     TINVListOfFields = []
     for item in lHorses :
         print(item)
@@ -158,7 +157,7 @@ for iRace in range(firstRace,lastRace+1) :
     xyzTierce['TierceChance'] = xyzTierce['TierceChance'] / 4
 
     #print(xyzTierce.head())
-    #kkkkkkkkkkkkkkkk
+    #kkkk
     xyzTierce['TierceChanceX'] = xyzTierce.T1Ch_x \
                                 * xyzTierce.T2Ch_y \
                                 * xyzTierce.T3Ch_z  
@@ -180,14 +179,12 @@ for iRace in range(firstRace,lastRace+1) :
                                             'TierceChanceX', 'PayX', \
                                             'T1Ch_x', 'T1Ch_y', 'T1Ch_z', \
                                             'T2Ch_x', 'T2Ch_y', 'T2Ch_z', \
-                                        'T3Ch_x', 'T3Ch_y', 'T3Ch_z'])
+                                            'T3Ch_x', 'T3Ch_y', 'T3Ch_z'])
     #print(xyzTierce)
     print(xyzTierce.head())
 
 
     xyzTierce.to_csv(path_to_directory + 'xyzTierce' + sRace + '.csv', index=False)
-
-
 
     #let's collapse our tierce investment chances to see if 
     #we can reproduce the investment chances we started with.
@@ -226,32 +223,41 @@ for iRace in range(firstRace,lastRace+1) :
     JockeyTierce.rename(columns={'TierceChance':'TierceCh'}, inplace=True)
 
     #now we'll want to merge in the jockey selction numbers (x y and z)
+    #also let's keep the jockey names to try to distinguish between the individual "other" jockeys.
+    #and let's merge in the jockey points from previous races 
+    # (races previous to firstRace.  we're simulating points scored between firstRace and lastRace).
     path_to_file = path_to_directory + 'RaceEntry' + sRace + '.csv' 
     JockeySelectionsRace = pd.read_csv(path_to_file) 
     print(JockeySelectionsRace)
 
     xJockey = JockeySelectionsRace.copy(deep=True)
     xJockey.rename(columns={'horseno':'horseno_x','JockeyNumber':'jockeyno_x'}, inplace=True)
-    xJockey.drop(columns='jockeyName',inplace=True)
+    xJockey.rename(columns={'jockeyName':'JNx'}, inplace=True)
+    #xJockey.rename(columns={'JockeyPoints':'xPreviousPoints'}, inplace=True)
+    #xJockey.drop(columns='jockeyName',inplace=True)
     #print(xJockey)
     JockeyTierce = JockeyTierce.merge(xJockey,on=['Race','horseno_x'], how='inner')
     #print(JockeyTierce.head())
 
     yJockey = JockeySelectionsRace.copy(deep=True)
     yJockey.rename(columns={'horseno':'horseno_y','JockeyNumber':'jockeyno_y'}, inplace=True)
-    yJockey.drop(columns='jockeyName',inplace=True)
-    #print(xJockey)
+    yJockey.rename(columns={'jockeyName':'JNy'}, inplace=True)
+    #yJockey.rename(columns={'JockeyPoints':'yPreviousPoints'}, inplace=True)
+    #yJockey.drop(columns='jockeyName',inplace=True)
+    #print(yJockey)
     JockeyTierce = JockeyTierce.merge(yJockey,on=['Race','horseno_y'], how='inner')
     #print(JockeyTierce.head())
     
     zJockey = JockeySelectionsRace.copy(deep=True)
     zJockey.rename(columns={'horseno':'horseno_z','JockeyNumber':'jockeyno_z'}, inplace=True)
-    zJockey.drop(columns='jockeyName',inplace=True)
-    #print(xJockey)
+    zJockey.rename(columns={'jockeyName':'JNz'}, inplace=True)
+    #Jockey.rename(columns={'JockeyPoints':'zPreviousPoints'}, inplace=True)
+    #zJockey.drop(columns='jockeyName',inplace=True)
+    #print(zJockey)
     JockeyTierce = JockeyTierce.merge(zJockey,on=['Race','horseno_z'], how='inner')
 
     JockeyTierce = JockeyTierce.reindex(columns=['Race','horseno_x','horseno_y', 'horseno_z', \
-                                        'jockeyno_x','jockeyno_y', 'jockeyno_z', \
+                                        'jockeyno_x','jockeyno_y', 'jockeyno_z', 'JNx','JNy', 'JNz', \
                                         'TierceCh'])
 
     JockeyTierce.rename(columns={'horseno_x':'Hx','jockeyno_x':'Jx', \
