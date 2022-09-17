@@ -25,3 +25,5 @@ Sample output:
 
 
 ![jkc_odds](https://user-images.githubusercontent.com/69921853/190531826-7bf7f168-25bd-4116-9c6e-e325c23630e6.jpg)
+
+See order of python files.txt for notes on running the scripts.
