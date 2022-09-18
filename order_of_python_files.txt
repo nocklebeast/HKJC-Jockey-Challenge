@@ -2,10 +2,6 @@
 edit and run
 race_parameters.py  
 
-#only do below once per race day.  
-# maps jockey names to jockey selection numbers for each race)
-hkjc_fetch_race_jockeys.py  
-
 #fetches (tierce) odds from hkjc.com,
 hkjc_fetch_odds_selenium.py 
 
@@ -13,7 +9,11 @@ hkjc_fetch_odds_selenium.py
 hkjc_fetch_jkc.py
 
 hkjc_process_jky.py 
- 
+
+#only do below once per race day.  
+# maps jockey names to jockey selection numbers for each race)
+hkjc_fetch_race_jockeys.py  
+
 hkjc_process_tierce_investments.py (public model tierce)
 
 #tierce pays and other odds are not used for jockey challenge for now.

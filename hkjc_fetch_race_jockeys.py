@@ -57,7 +57,12 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #browser = webdriver.Firefox()
 #browser = webdriver.Chrome(options=WebDriverOptions)
 
-
+#later, merge race entry(jockeys) with jockey selections
+JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
+print(JockeySelections)
+dfOtherNumber = JockeySelections[JockeySelections['jockeyName'] == 'Others']
+OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
+print(OtherNumber)
 
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)

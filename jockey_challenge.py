@@ -75,7 +75,10 @@ JockeyTierceChance.to_csv(path_to_directory + 'JockeyTierceChance' + '.csv', ind
 
 #run a race day's simulation nSims times.
 #nSims = 10007
+#nSims = 5003
+#nSims = 2003
 nSims = 1009
+
 iNextPrint = 0
 nProgressPrints = 20
 for iter in range(nSims): 

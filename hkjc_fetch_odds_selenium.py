@@ -50,7 +50,7 @@ print(sVenue)
 for iRace in range(firstRace,lastRace+1) :
 
     sRace = str(iRace)
-    #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv']
+    #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']
     #let's only fetch odds we use for handicapping the jockey challenge.
     #'tceinv' is tierce investments.
     #'tcetop' is tierce top 20
@@ -58,6 +58,7 @@ for iRace in range(firstRace,lastRace+1) :
     #'tri' is full trio grid.
     #lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
     lBetTypes=[ 'tceinv']
+    lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']
 
     for sType in lBetTypes:
         print(sRace)
@@ -85,7 +86,7 @@ for iRace in range(firstRace,lastRace+1) :
         
         browser = webdriver.Firefox(options=WebDriverOptions)
         browser.get(race_url)
-        time.sleep(3)
+        time.sleep(4)
         #print("browser page source")
         #print(browser.page_source)
         txtPage = browser.page_source

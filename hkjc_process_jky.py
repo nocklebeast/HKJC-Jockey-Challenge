@@ -64,6 +64,7 @@ dfJockeys.to_csv(path_to_directory + 'RawJockeys' + '.csv', index=False)
 dfJockeys.drop(['nameCH'],axis= 1, inplace=True  )
 dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace='---',value='0')
 dfJockeys['Points'] = dfJockeys['Points'].astype(int)
+dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace=-1,value=0)
 
 dfJockeys.rename(columns={'num':'JockeyNumber','nameEN':'jockeyName','opOdds':'OpeningOdds'}, inplace=True)
 dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','Points':'JockeyPoints'}, inplace=True)
