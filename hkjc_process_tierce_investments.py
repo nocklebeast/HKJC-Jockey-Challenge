@@ -264,6 +264,9 @@ for iRace in range(firstRace,lastRace+1) :
                                 'horseno_y':'Hy','jockeyno_y':'Jy', \
                                 'horseno_z':'Hz','jockeyno_z':'Jz'}, inplace=True )
     JockeyTierce.to_csv(path_to_directory + 'JockeyTierce' + sRace + '.csv', index=False)
+    #let's save two versions for now
+    JockeyTierce.to_csv(path_to_directory + 'JockeyTierce_org' + sRace + '.csv', index=False)
+
     print(JockeyTierce.head())
 
 #end Race

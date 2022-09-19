@@ -1,5 +1,5 @@
 
-edit and run
+edit and run, or just edit race_parameters.txt.
 race_parameters.py  
 
 #fetches (tierce) odds from hkjc.com,
@@ -16,12 +16,18 @@ hkjc_fetch_race_jockeys.py
 
 hkjc_process_tierce_investments.py (public model tierce)
 
-#tierce pays and other odds are not used for jockey challenge for now.
-hkjc_process_tcebank.py
-hkjc_process_tcetop.py
-merge_tierce_pays.py
+#use exacta with tierce investments?
+hkjc_process_exacta.py
+
+tce2exacta.py
 
 jockey_challenge.py
 
 PrettyJKC.py
 
+
+
+#tierce pays and other odds are not used for jockey challenge for now.
+hkjc_process_tcebank.py
+hkjc_process_tcetop.py
+merge_tierce_pays.py
