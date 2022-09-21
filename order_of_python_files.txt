@@ -19,6 +19,10 @@ hkjc_process_tierce_investments.py (public model tierce)
 #use exacta with tierce investments?
 hkjc_process_exacta.py
 
+#also use quinella with exacta/tierce investments
+hkjc_process_TriangleGrid.py
+
+
 tce2exacta.py
 
 jockey_challenge.py
