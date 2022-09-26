@@ -45,7 +45,7 @@ print(firstRace)
 print(lastRace)
 print(sVenue)
 
-
+ 
 #https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=en&date=2022-05-15&venue=ST&raceno=1
 
 #use these headless options to not have the browser pop up.
@@ -58,7 +58,8 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #browser = webdriver.Chrome(options=WebDriverOptions)
 
 #later, merge race entry(jockeys) with jockey selections
-JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
+#get ALL jockey selections to get names and points of all the other jockeys.
+JockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
 print(JockeySelections)
 dfOtherNumber = JockeySelections[JockeySelections['jockeyName'] == 'Others']
 OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
@@ -143,16 +144,16 @@ for iRace in range(firstRace,lastRace+1) :
     #merge in jockey selections
     #be sure to not throw away "other jockeys"
     #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
-    #print(dfRaceEntry)
-    #print(JockeySelections)
+    print(dfRaceEntry)
+    print(JockeySelections)
     RaceEntry = dfRaceEntry.merge(JockeySelections, on='jockeyName', how='left')
-    #print(RaceEntry)
+    print(RaceEntry)
 
     RaceEntry['JockeyNumber'].fillna(OtherNumber,inplace=True)
     #deal with "other"
     RaceEntry['JockeyNumber'] = RaceEntry['JockeyNumber'].astype(int)
     RaceEntry.drop(['OtherNumber'], axis=1, inplace=True)
-    #print(RaceEntry)    
+    print(RaceEntry)    
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
     #don't need the jockey names for jockey challenge, let's drop them. (just needed for merging selections and horseno)

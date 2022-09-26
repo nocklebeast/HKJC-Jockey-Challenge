@@ -5,6 +5,7 @@
 
 from lib2to3.pgen2.literals import simple_escapes
 from tokenize import Single
+import string
 import pandas as pd
 import numpy as np
 import os 
@@ -86,21 +87,37 @@ for iter in range(nSims):
         iNextPrint = iNextPrint + 1
         print(SimJockeyPoints)
         print("pctSims = " + str(iter/nSims) )
-
-    ###################### throw the darts at each race (groupby Race) with weights set as the tierce chance.############
-    # using 'TierceCh" as weight.... trifecta horse combos with higher chances are more likely to be sampled.
-
+    
+    ###################### throw  darts at each race (groupby Race) with weights set as the tierce chance in sample function.############
+    # using 'TierceCh" as weight.... trifecta horse permutations with higher chances are more likely to be sampled.
+    
     JockeyTierce = JockeyTierceChance.copy(deep=True)
+    #print(JockeyTierce.head(35))
     # select a single (n=1) winning trifecta combination for each race.
+    #print("describe jockey tierce")
+    #print(JockeyTierce.describe())
+    
+    JockeyTierce['Race'] = JockeyTierce['Race'].astype(int)
+    #JockeyTierce['JNx'] = JockeyTierce['JNx'].astype(str)
+    #JockeyTierce['JNy'] = JockeyTierce['JNy'].astype(str)
+    #JockeyTierce['JNz'] = JockeyTierce['JNz'].astype(str)
+    #JockeyTierce['TierceCh'] = JockeyTierce['TierceCh'].astype(float)
+    #print(JockeyTierce.dtypes)
+
+    #simulated_winners = JockeyTierce.groupby('Race').sample(n=1, weights='TierceCh')
+    #simulated_winners = JockeyTierce.groupby('Race').sample() #n=1,weights='TierceCh')
     simulated_winners = JockeyTierce.groupby('Race').sample(n=1,weights='TierceCh')
+    #kkkkkkkkkkkkk
     simulated_winners['bWinner'] = 1
     #just keep the winner column, then merge back into JockeyTierceChance.
     simulated_winners = simulated_winners['bWinner']
     #left join winners onto JockeyTierceChance
+    
     JockeyTierce = pd.merge(JockeyTierce,simulated_winners, left_index=True, right_index=True, how='left')
     JockeyTierce['bWinner'].fillna(0,inplace=True)
     JockeyTierce['bWinner'] = JockeyTierce['bWinner'].astype(int)
     #print(JockeyTierce.head())
+    #print(JockeyTierce.describe())
 
     # we need to score each individual jockey by their names (not by jockey number)
     #  each individual "other" jockey must be score separate from the "other" jockeys.
@@ -109,7 +126,8 @@ for iter in range(nSims):
     Points = JockeyTierce.copy(deep=True)
     Points.drop(['Race','Hx','Hy','Hz','TierceCh'], axis=1, inplace=True)
     #print(Points.head())
-    
+    #print(Points.dtypes)
+    #kkkkkkkk
     Points1 = Points.copy(deep=True)
     Points1['Points1'] = 12 * Points['bWinner']
     Points1.drop(['Jy','Jz'], axis=1, inplace=True)
@@ -121,7 +139,7 @@ for iter in range(nSims):
     RaceDayPoints1 = Points1.groupby(['jockeyName']).sum().reset_index()
     RaceDayPoints1.rename(columns = {'bWinner':'nWins'}, inplace=True)
     #print(RaceDayPoints1)
-
+    
     Points2 = Points.copy(deep=True)
     Points2['Points2'] = 6 * Points['bWinner']
     Points2.drop(['Jx','Jz'], axis=1, inplace=True)
@@ -133,7 +151,7 @@ for iter in range(nSims):
     RaceDayPoints2 = Points2.groupby(['jockeyName']).sum().reset_index()
     RaceDayPoints2.rename(columns = {'bWinner':'nPlaces'}, inplace=True)
     #print(RaceDayPoints2)
-
+    
     Points3 = Points.copy(deep=True)
     Points3['Points3'] = 4 * Points['bWinner']
     Points3.drop(['Jx','Jy'], axis=1, inplace=True)
@@ -164,14 +182,16 @@ for iter in range(nSims):
     RaceDayPoints.drop(['Points1','Points2','Points3'], axis=1, inplace=True)
     #print(RaceDayPoints)
     
-    MaxPoints = RaceDayPoints.max(axis=0)
-    #print(RaceDayPoints)
+    #MaxPoints = RaceDayPoints.max(axis=0)
+    MaxPoints = RaceDayPoints[['nWins','nPlaces','nShows', 'Points']].max(axis=0)
     #print(MaxPoints)
+    
     RaceDayPoints['isWinner'] = RaceDayPoints['Points'] == MaxPoints['Points']
     RaceDayPoints['Winner'] = RaceDayPoints['isWinner'].astype(int)
     RaceDayPoints['TiePoints'] = 0
-
-    AllTotals = RaceDayPoints.sum(axis=0)
+    
+    AllTotals = RaceDayPoints[['Winner','nWins','nPlaces','nShows','Points','TiePoints']].sum(axis=0)
+    #AllTotals = RaceDayPoints.sum(axis=0)
     #and break ties.
     #if more than one winner for the race day.
 
@@ -188,7 +208,8 @@ for iter in range(nSims):
         #kkkkkkkkkkkkkkk
         #check for ties again. 
         
-        AllTotals = RaceDayPoints.sum(axis=0)
+        #AllTotals = RaceDayPoints.sum(axis=0)
+        AllTotals = RaceDayPoints[['Winner','nWins','nPlaces','nShows','Points','TiePoints']].sum(axis=0)
         RaceDayPoints['TiePoints'] = 0
         if AllTotals['Winner'] > 1:
             #print("break at 2nd place")
@@ -200,7 +221,8 @@ for iter in range(nSims):
             RaceDayPoints['isWinner'] = RaceDayPoints['TiePoints'] == MaxPoints['TiePoints']
             RaceDayPoints['Winner'] = RaceDayPoints['isWinner'].astype(int)
             #check for ties and break them with number of shows.
-            AllTotals = RaceDayPoints.sum(axis=0)
+            #AllTotals = RaceDayPoints.sum(axis=0)
+            AllTotals = RaceDayPoints[['Winner','nWins','nPlaces','nShows','Points','TiePoints']].sum(axis=0)
             #print(AllTotals)
             #print(RaceDayPoints)
             RaceDayPoints['TiePoints'] = 0
@@ -219,7 +241,8 @@ for iter in range(nSims):
                 RaceDayPoints['Winner'] = RaceDayPoints['isWinner'].astype(int)
                 #the jockey club now breaks ties at 4th place.  we will not, as that
                 #requires a superfecta model to get 4th place (instead of our trifecta model).
-                AllTotals = RaceDayPoints.sum(axis=0)
+                #AllTotals = RaceDayPoints.sum(axis=0)
+                AllTotals = RaceDayPoints[['Winner','nWins','nPlaces','nShows','Points','TiePoints']].sum(axis=0)
                 #print(RaceDayPoints)
                 #print(AllTotals)
                 #kkkkkkkkkkkkkkk
