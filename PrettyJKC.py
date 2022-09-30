@@ -158,7 +158,7 @@ PrettyJKC.drop(['RemainingRides'], axis=1, inplace=True)
 PieJKC = PrettyJKC.copy(deep=True)
 
 #remove low probability jockeys.  Keep jockeys greater than minPct chance.
-minPct = 2.2
+minPct = 2.4
 PieJKC = PieJKC[ PieJKC['Chance'] > minPct]
 print(PieJKC)
 #replace last probablities with "The Rest"
