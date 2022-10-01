@@ -35,3 +35,7 @@ jockey challenge odds
 
 https://bet.hkjc.com/racing/getJSON.aspx?type=jkc&date=2022-05-15&venue=ST
 
+trainer challenge odds
+
+https://bet.hkjc.com/racing/getJSON.aspx?type=tnc&date=2022-10-01&venue=ST
+

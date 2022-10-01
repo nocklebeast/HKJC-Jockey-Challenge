@@ -119,25 +119,32 @@ for iRace in range(firstRace,lastRace+1) :
     #print(dfRunners)
 
     df2 = pd.DataFrame(dfRunners['lRaceEntry'].to_list())
-    df2.drop([1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29], axis=1, inplace=True)
+    #print(df2)
+    #keep 0 = horseno, 9 = jockey name, 13 = trainer name.
+    df2.drop([1,2,3,4,5,6,7,8,10,11,12,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29], axis=1, inplace=True)
     #print(df2)
 
-    dfHorse =  pd.DataFrame(df2[0].str.split(':'))
-    dfJockey = pd.DataFrame(df2[9].str.split(':'))
+    dfHorse =  pd.DataFrame( df2[0].str.split(':'))
+    dfJockey = pd.DataFrame( df2[9].str.split(':'))
+    dfTrainer = pd.DataFrame(df2[13].str.split(':'))
     #print(dfHorse)
     #print(dfJockey)
 
+
     dfH2 = pd.DataFrame(dfHorse[0].to_list())
     dfJ2 = pd.DataFrame(dfJockey[9].to_list())
+    dfT2 = pd.DataFrame(dfTrainer[13].to_list())
     #print(dfH2)
     #print(dfJ2)
+    #print(dfT2)
 
     dfRaceEntry = pd.DataFrame()
     dfRaceEntry['horseno'] = dfH2[1]
     dfRaceEntry['jockeyName'] = dfJ2[1]
     dfRaceEntry['Race'] = iRace
+    dfRaceEntry['trainerName'] = dfT2[1]
 
-    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', 'jockeyName'] )
+    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', 'jockeyName','trainerName'] )
     dfRaceEntry['horseno'] = dfRaceEntry['horseno'].astype(int)
     print(dfRaceEntry)
 
@@ -157,6 +164,7 @@ for iRace in range(firstRace,lastRace+1) :
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
     #don't need the jockey names for jockey challenge, let's drop them. (just needed for merging selections and horseno)
+    #perhaps should keep jockey names here?
     RaceEntry.drop(['jockeyName'],axis=1,inplace=True)
 
     #create an exacta grid jockey race entries, then keep x != y.
