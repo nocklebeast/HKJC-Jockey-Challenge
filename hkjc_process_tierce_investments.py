@@ -231,38 +231,38 @@ for iRace in range(firstRace,lastRace+1) :
     print(JockeySelectionsRace)
 
     xJockey = JockeySelectionsRace.copy(deep=True)
-    xJockey.rename(columns={'horseno':'horseno_x','JockeyNumber':'jockeyno_x'}, inplace=True)
-    xJockey.rename(columns={'jockeyName':'JNx'}, inplace=True)
+    xJockey.rename(columns={'horseno':'horseno_x','jkcNumber':'jkcNo_x'}, inplace=True)
+    xJockey.rename(columns={'jkcName':'jkcNx'}, inplace=True)
     #xJockey.rename(columns={'JockeyPoints':'xPreviousPoints'}, inplace=True)
-    #xJockey.drop(columns='jockeyName',inplace=True)
+    #xJockey.drop(columns='jkcName',inplace=True)
     #print(xJockey)
     JockeyTierce = JockeyTierce.merge(xJockey,on=['Race','horseno_x'], how='inner')
     #print(JockeyTierce.head())
 
     yJockey = JockeySelectionsRace.copy(deep=True)
-    yJockey.rename(columns={'horseno':'horseno_y','JockeyNumber':'jockeyno_y'}, inplace=True)
-    yJockey.rename(columns={'jockeyName':'JNy'}, inplace=True)
+    yJockey.rename(columns={'horseno':'horseno_y','jkcNumber':'jkcNo_y'}, inplace=True)
+    yJockey.rename(columns={'jkcName':'jkcNy'}, inplace=True)
     #yJockey.rename(columns={'JockeyPoints':'yPreviousPoints'}, inplace=True)
-    #yJockey.drop(columns='jockeyName',inplace=True)
+    #yJockey.drop(columns='jkcName',inplace=True)
     #print(yJockey)
     JockeyTierce = JockeyTierce.merge(yJockey,on=['Race','horseno_y'], how='inner')
     #print(JockeyTierce.head())
     
     zJockey = JockeySelectionsRace.copy(deep=True)
-    zJockey.rename(columns={'horseno':'horseno_z','JockeyNumber':'jockeyno_z'}, inplace=True)
-    zJockey.rename(columns={'jockeyName':'JNz'}, inplace=True)
+    zJockey.rename(columns={'horseno':'horseno_z','jkcNumber':'jkcNo_z'}, inplace=True)
+    zJockey.rename(columns={'jkcName':'jkcNz'}, inplace=True)
     #Jockey.rename(columns={'JockeyPoints':'zPreviousPoints'}, inplace=True)
-    #zJockey.drop(columns='jockeyName',inplace=True)
+    #zJockey.drop(columns='jkcName',inplace=True)
     #print(zJockey)
     JockeyTierce = JockeyTierce.merge(zJockey,on=['Race','horseno_z'], how='inner')
 
     JockeyTierce = JockeyTierce.reindex(columns=['Race','horseno_x','horseno_y', 'horseno_z', \
-                                        'jockeyno_x','jockeyno_y', 'jockeyno_z', 'JNx','JNy', 'JNz', \
+                                        'jkcNo_x','jkcNo_y', 'jkcNo_z', 'jkcNx','jkcNy', 'jkcNz', \
                                         'TierceCh'])
 
-    JockeyTierce.rename(columns={'horseno_x':'Hx','jockeyno_x':'Jx', \
-                                'horseno_y':'Hy','jockeyno_y':'Jy', \
-                                'horseno_z':'Hz','jockeyno_z':'Jz'}, inplace=True )
+    JockeyTierce.rename(columns={'horseno_x':'Hx',  \
+                                'horseno_y':'Hy',  \
+                                'horseno_z':'Hz' }, inplace=True )
     JockeyTierce.to_csv(path_to_directory + 'JockeyTierce' + sRace + '.csv', index=False)
     #let's save two versions for now
     JockeyTierce.to_csv(path_to_directory + 'JockeyTierce_org' + sRace + '.csv', index=False)

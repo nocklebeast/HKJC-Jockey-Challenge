@@ -57,8 +57,9 @@ for iRace in range(firstRace,lastRace+1) :
     #'tcebank' is tierce top 10 bankers.
     #'tri' is full trio grid.
     #lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
-    lBetTypes=[ 'tceinv', 'fct', 'qin']
+    #lBetTypes=[ 'tceinv', 'fct', 'qin']
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']
+    lBetTypes=[ 'tceinv', 'fct', 'qin'] #, 'qpl']
 
     for sType in lBetTypes:
         print(sRace)

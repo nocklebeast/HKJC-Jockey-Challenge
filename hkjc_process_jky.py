@@ -14,10 +14,10 @@ path_to_directory = cwd + '\\odds_files\\'
 
 for sType in ['jkc','tnc']:
     if sType == 'jkc':
-        jword = 'jockey'
+        #jword = 'jockey'
         Jword = 'Jockey'
     else:
-        jword = 'trainer'
+        #jword = 'trainer'
         Jword = 'Trainer'
 
     #print(path_to_directory)
@@ -76,11 +76,9 @@ for sType in ['jkc','tnc']:
     dfJockeys['Points'] = dfJockeys['Points'].astype(int)
     dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace=-1,value=0)
 
-    jnum = Jword + 'Number'
-    jname = jword + 'Name'
-    jpoints = Jword + 'Points'
-    dfJockeys.rename(columns={'num':jnum,'nameEN':jword + 'Name','opOdds':'OpeningOdds'}, inplace=True)
-    dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','Points':jpoints}, inplace=True)
+
+    dfJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name','opOdds':'OpeningOdds'}, inplace=True)
+    dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','Points':sType+'Points'}, inplace=True)
     dfJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
     dfJockeys['Rides'] = dfJockeys['Rides'].astype(int)
     dfJockeys.drop(['code','status','sStatus','order','combId','lineId','betSelDetails'],axis=1, inplace=True)
@@ -93,7 +91,7 @@ for sType in ['jkc','tnc']:
     dfJockeys['firstRace'] = dJockeyInfo.get('FIRST_RACE')
     dfJockeys['lastRace'] = dJockeyInfo.get('LAST_RACE')
     dfJockeys['excludeRace'] = dJockeyInfo.get('EXCLUDE_RACE')
-    dfJockeys['OtherNumber'] = dJockeyInfo.get('OTHER_NO')
+    dfJockeys[sType+'OtherNumber'] = dJockeyInfo.get('OTHER_NO')
     dfJockeys['updResultRaceNo'] = dJockeyInfo.get('updResultRaceNo')
     #print("dfJockeys")
     #print(dfJockeys)
@@ -134,8 +132,8 @@ for sType in ['jkc','tnc']:
     dfOtherJockeys.to_csv(path_to_directory + 'RawOther' + Jword + 's' + '.csv', index=False)
 
     dfOtherJockeys.drop(['nameCH',],axis= 1, inplace=True  )
-    dfOtherJockeys.rename(columns={'num':jnum,'nameEN':jname}, inplace=True)
-    dfOtherJockeys[Jword+'Number'] = dJockeyInfo.get('OTHER_NO')
+    dfOtherJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name'}, inplace=True)
+    dfOtherJockeys[sType+'Number'] = dJockeyInfo.get('OTHER_NO')
     dfOtherJockeys.drop(['code','order','betSelDetails'],axis=1, inplace=True)
     dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace='---',value='0')
     dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
@@ -143,7 +141,7 @@ for sType in ['jkc','tnc']:
     dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace=-1,value=0)
 
     
-    dfOtherJockeys.rename(columns={'Points':jpoints}, inplace=True)
+    dfOtherJockeys.rename(columns={'Points':sType+'Points'}, inplace=True)
     dfOtherJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
     #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
     #print(dfOtherJockeys)
@@ -157,9 +155,9 @@ for sType in ['jkc','tnc']:
     #later, merge race entry(jockeys) with jockey selections
     #JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
     #print(JockeySelections)
-    dfOtherNumber = JockeySelections[JockeySelections[jword+'Name'] == 'Others']
+    dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
     
-    OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
+    OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
     OtherOdds = dfOtherNumber['CurrentOdds'].loc[dfOtherNumber.index[0]]
     #print(OtherNumber)
     #print(OtherOdds)
@@ -167,7 +165,7 @@ for sType in ['jkc','tnc']:
     #let's also concat the Other Jockey Selections 
     # so that we can map all the other jockeys by their names to other number properly.
     OtherJockeySelections = pd.read_csv(path_to_directory + 'Other' + Jword + 'Selections' + '.csv')
-    OtherJockeySelections['OtherNumber'] = OtherNumber
+    OtherJockeySelections[sType+'OtherNumber'] = OtherNumber
     AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
     #fill in the current Odds for other jockeys with the correct odds for others.
     AllJockeySelections['CurrentOdds'].fillna(OtherOdds,inplace=True)

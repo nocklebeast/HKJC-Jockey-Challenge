@@ -45,6 +45,7 @@ print(firstRace)
 print(lastRace)
 print(sVenue)
 
+sType = 'jkc'
  
 #https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=en&date=2022-05-15&venue=ST&raceno=1
 
@@ -61,8 +62,8 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #get ALL jockey selections to get names and points of all the other jockeys.
 JockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
 print(JockeySelections)
-dfOtherNumber = JockeySelections[JockeySelections['jockeyName'] == 'Others']
-OtherNumber = dfOtherNumber['OtherNumber'].loc[dfOtherNumber.index[0]]
+dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
+OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
 print(OtherNumber)
 
 for iRace in range(firstRace,lastRace+1) :
@@ -106,7 +107,7 @@ for iRace in range(firstRace,lastRace+1) :
     sRunnerList = sRunnerList.replace('"','')
     #print(sRunnerList)
     # is there an easy way to json to data frame?
-    # need to map horse number "num" with "jockeyName"
+    # need to map horse number "num" with "jkcName"
     lRunners = sRunnerList.split("},{")
     print(lRunners[3])
 
@@ -140,11 +141,11 @@ for iRace in range(firstRace,lastRace+1) :
 
     dfRaceEntry = pd.DataFrame()
     dfRaceEntry['horseno'] = dfH2[1]
-    dfRaceEntry['jockeyName'] = dfJ2[1]
+    dfRaceEntry[sType+'Name'] = dfJ2[1]
     dfRaceEntry['Race'] = iRace
-    dfRaceEntry['trainerName'] = dfT2[1]
+    dfRaceEntry['tncName'] = dfT2[1]
 
-    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', 'jockeyName','trainerName'] )
+    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', sType+'Name','tncName'] )
     dfRaceEntry['horseno'] = dfRaceEntry['horseno'].astype(int)
     print(dfRaceEntry)
 
@@ -153,19 +154,19 @@ for iRace in range(firstRace,lastRace+1) :
     #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
     print(dfRaceEntry)
     print(JockeySelections)
-    RaceEntry = dfRaceEntry.merge(JockeySelections, on='jockeyName', how='left')
+    RaceEntry = dfRaceEntry.merge(JockeySelections, on=sType+'Name', how='left')
     print(RaceEntry)
 
-    RaceEntry['JockeyNumber'].fillna(OtherNumber,inplace=True)
+    RaceEntry[sType+'Number'].fillna(OtherNumber,inplace=True)
     #deal with "other"
-    RaceEntry['JockeyNumber'] = RaceEntry['JockeyNumber'].astype(int)
-    RaceEntry.drop(['OtherNumber'], axis=1, inplace=True)
+    RaceEntry[sType+'Number'] = RaceEntry[sType+'Number'].astype(int)
+    RaceEntry.drop([sType+'OtherNumber'], axis=1, inplace=True)
     print(RaceEntry)    
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
     #don't need the jockey names for jockey challenge, let's drop them. (just needed for merging selections and horseno)
     #perhaps should keep jockey names here?
-    RaceEntry.drop(['jockeyName'],axis=1,inplace=True)
+    RaceEntry.drop([sType+'Name'],axis=1,inplace=True)
 
     #create an exacta grid jockey race entries, then keep x != y.
     xyRace = pd.merge(RaceEntry,RaceEntry,how='cross')
@@ -173,7 +174,7 @@ for iRace in range(firstRace,lastRace+1) :
     xyRace.drop(['Race_y'],axis=1,inplace=True)
     xyRace.rename({'Race':'Race_x'}, axis=1)
 
-    xyRace = xyRace.reindex(columns=['horseno_x','horseno_y', 'JockeyNumber_x', 'JockeyNumber_y' ] )
+    xyRace = xyRace.reindex(columns=['horseno_x','horseno_y', sType+'Number_x', sType+'Number_y' ] )
     xyRace.sort_values(by=['horseno_x','horseno_y'], inplace=True)
     #print(xyRace.head())
 
@@ -182,10 +183,10 @@ for iRace in range(firstRace,lastRace+1) :
     xyzRace = xyzRace[xyzRace.horseno_x != xyzRace.horseno]
     xyzRace = xyzRace[xyzRace.horseno_y != xyzRace.horseno]
 
-    xyzRace.rename(columns={'horseno':'horseno_z', 'JockeyNumber':'JockeyNumber_z' }, inplace=True)
+    xyzRace.rename(columns={'horseno':'horseno_z', sType+'Number':sType+'Number_z' }, inplace=True)
 
     xyzRace = xyzRace.reindex(columns=['horseno_x','horseno_y','horseno_z', \
-                                        'JockeyNumber_x', 'JockeyNumber_y', 'JockeyNumber_z'  ])
+                                        sType+'Number_x', sType+'Number_y', sType+'Number_z'  ])
 
     xyzRace.sort_values(by=['horseno_x','horseno_y','horseno_z'], inplace=True)
 

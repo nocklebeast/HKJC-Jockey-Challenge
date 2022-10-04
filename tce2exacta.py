@@ -20,6 +20,8 @@ firstRace = int(RaceParameters.at[0,'firstRace'])
 lastRace = int(RaceParameters.at[0,'lastRace'])
 sVenue = RaceParameters.at[0,'sVenue']
 
+sType = 'jkc'
+
 #let's process races within the range set by first and last race.
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
@@ -28,9 +30,12 @@ for iRace in range(firstRace,lastRace+1) :
     path_to_file = path_to_directory + 'JockeyTierce_org' + sRace + '.csv'
     TierceChance = pd.read_csv(path_to_file)
     TierceChance_org = TierceChance.copy(deep=True)
+    #print(TierceChance.head(2))
 
     #drop a bunch of extra columns
-    TierceChance.drop(['Jx','Jy', 'Jz','JNx','JNy','JNz'], axis=1, inplace=True)
+    #TierceChance.drop(['Jx','Jy', 'Jz','JNx','JNy','JNz'], axis=1, inplace=True)
+    TierceChance.drop([sType+'No_x', sType+'No_y',sType+'No_z'], axis=1, inplace=True)
+    TierceChance.drop([sType+'Nx', sType+'Ny',sType+'Nz'], axis=1, inplace=True)
     TierceChance.sort_values(['Race','Hx','Hy','Hz'],inplace=True)
     #print(TierceChance.head(15))
     #collapse and sum on race, x, y horse numbers.
