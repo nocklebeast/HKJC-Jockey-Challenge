@@ -1,11 +1,11 @@
 # HKJC-Jockey-Challenge
-Estimating odds for HKJC's Jockey Challenge.
+Estimating odds for HKJC's Jockey Challenge and the Trainer Challenge
 
 In the HKJC's Jockey Challenge, best performing jockeys are assigned points for each win, place, or show (1st, 2nd, or 3rd place). The jockey with the most points wins the challenge, and the HKJC accepts bets on the outcome in Hong Kong.
 
 Uses a simple model for predicting trifecta winners for each race of the day, based on public odds on HKJC's website. Then estimates the expected points and odds of winning the jockey challenge using a Monte Carlo simulation.
 
-The calculation may be peformed before the first race and in between races (just like you can bet during those times as well... if you're in Hong Kong).
+The calculation may be peformed before the first race and in between races (just like you can bet during those times as well... if you're in Hong Kong).  The Trainer Challenge is only played before the first race of the day.
 
 Known issues/room for improvement:
 
@@ -13,9 +13,7 @@ Known issues/room for improvement:
 
 • The program should be using a superfecta (quartet) model instead of a trifecta (tierce) model in order to break ties with the number of 4th place finishes.  But I think these tie breakers are fairly rare (maybe 1% of jockey challenges), so maybe not worth the effort.
 
-• As always, a more accurate trifecta model would result in a more predictive Monte Carlo simulation.
-
-• Should include path to odds directory in race parameters file.
+• As always, a more accurate trifecta model would result in a more predictive Monte Carlo simulation.  May include an option for reading in an alternative trifecta chance file in the future.
 
 Sample output:
 
