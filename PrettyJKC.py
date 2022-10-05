@@ -40,7 +40,7 @@ PrettyJKC['ExpectedPoints'] = PrettyJKC['ExpectedPoints'].astype(int)
 PrettyJKC.drop(['TotalPoints', 'RawChance','Pay','TotalWins','nRuns'], axis=1, inplace=True)
 PrettyJKC.rename(columns={'sPay':'Estimated Odds'}, inplace=True)
 PrettyJKC.rename(columns={sType+'Name':'Jockey'}, inplace=True)
-PrettyJKC.rename(columns={'CurrentOdds':'Current Odds'}, inplace=True)
+PrettyJKC.rename(columns={sType+'CurrentOdds':'Current Odds'}, inplace=True)
 PrettyJKC.rename(columns={sType+'Points':'Jockey Points'}, inplace=True)
 PrettyJKC.rename(columns={'ExpectedPoints':'Expected Points'}, inplace=True)
 PrettyJKC.sort_values(by='Expected Points',ascending=False,inplace=True)
@@ -98,7 +98,7 @@ axes[0].set_title(sPlotTitle)
 
 #create a simple/pretty dataframe for the odds table.
 PrettyOdds = PrettyJKC.copy(deep=True)
-PrettyOdds.drop([sType+'Number', 'Jockey Points','Expected Points','Chance','RemainingRides'], axis=1, inplace=True)
+PrettyOdds.drop([sType+'Number', 'Jockey Points','Expected Points','Chance',sType+'RemainingRides'], axis=1, inplace=True)
 PrettyOdds.rename(columns={'Current Odds': 'Current HKJC Odds'}, inplace=True)
 print(PrettyOdds)
 
@@ -154,7 +154,7 @@ plt.show()
 
 
 ### create a pie plot of chances the jockey will win the jockey challenge.
-PrettyJKC.drop(['RemainingRides'], axis=1, inplace=True)
+PrettyJKC.drop([sType+'RemainingRides'], axis=1, inplace=True)
 
 PieJKC = PrettyJKC.copy(deep=True)
 

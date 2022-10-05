@@ -21,6 +21,15 @@ lastRace = int(RaceParameters.at[0,'lastRace'])
 sVenue = RaceParameters.at[0,'sVenue']
 
 sType = 'jkc'
+sThing = 'Jockey'
+tType = 'tnc'
+#jockey-tierce has the trainer info in it (from hkjc_process_tierce_investments)
+"""
+if sType == 'jkc':
+    sThing = 'Jockey'
+else:
+    sThing = 'Trainer'
+"""
 
 #let's process races within the range set by first and last race.
 for iRace in range(firstRace,lastRace+1) :
@@ -35,7 +44,9 @@ for iRace in range(firstRace,lastRace+1) :
     #drop a bunch of extra columns
     #TierceChance.drop(['Jx','Jy', 'Jz','JNx','JNy','JNz'], axis=1, inplace=True)
     TierceChance.drop([sType+'No_x', sType+'No_y',sType+'No_z'], axis=1, inplace=True)
+    TierceChance.drop([tType+'No_x', tType+'No_y',tType+'No_z'], axis=1, inplace=True)
     TierceChance.drop([sType+'Nx', sType+'Ny',sType+'Nz'], axis=1, inplace=True)
+    TierceChance.drop([tType+'Nx', tType+'Ny',tType+'Nz'], axis=1, inplace=True)
     TierceChance.sort_values(['Race','Hx','Hy','Hz'],inplace=True)
     #print(TierceChance.head(15))
     #collapse and sum on race, x, y horse numbers.
@@ -66,7 +77,7 @@ for iRace in range(firstRace,lastRace+1) :
     JockeyTierceWithFactor = pd.merge(TierceChance_org,ExactaChance, on=['Race','Hx','Hy'], how='inner')
     JockeyTierceWithFactor['TierceCh_org'] = JockeyTierceWithFactor['TierceCh']
     JockeyTierceWithFactor['TierceCh'] = JockeyTierceWithFactor['TierceCh_org'] * JockeyTierceWithFactor['ForecastFactor']
-    JockeyTierceWithFactor.to_csv(path_to_directory + 'JockeyTierce_fct' + sRace + '.csv', index=False)
+    JockeyTierceWithFactor.to_csv(path_to_directory + sThing+'Tierce_fct' + sRace + '.csv', index=False)
     #in the tierce grid.
     # New Tierce Chance(x,y,z) = ExFctChance(x,y) / ExTceCh(x,y)     * old TierceChance(x,y,z)
     # ExFctChance(x,y) / ExTceCh(x,y) is our factor ForecastFactor
@@ -129,7 +140,7 @@ for iRace in range(firstRace,lastRace+1) :
     JockeyTierceWithFactorNew['TierceCh'] = JockeyTierceWithFactorNew['TierceCh_fctFactor'] * JockeyTierceWithFactorNew['QuinellaFactor']
 
     #save this latest augmented tierce chance dataframe.
-    JockeyTierceWithFactorNew.to_csv(path_to_directory + 'JockeyTierce_new_new' + sRace + '.csv', index=False)
+    JockeyTierceWithFactorNew.to_csv(path_to_directory + sThing+'Tierce_new_new' + sRace + '.csv', index=False)
     print(JockeyTierceWithFactorNew.head())
     print(JockeyTierceWithFactorNew.describe())
     AllTotals = JockeyTierceWithFactorNew.sum(axis=0)
@@ -138,7 +149,7 @@ for iRace in range(firstRace,lastRace+1) :
     ### todo need to drop some columns. ##########################################################
     #drop some columns. and save for the jockey challenge.
     JockeyTierceWithFactorNew.drop(columns=['ForecastFactor','TierceCh_org','QuinellaFactor','Factor','TierceCh_fctFactor'],inplace=True)
-    JockeyTierceWithFactorNew.to_csv(path_to_directory + 'JockeyTierce' + sRace + '.csv', index=False)
+    JockeyTierceWithFactorNew.to_csv(path_to_directory + sThing+'Tierce' + sRace + '.csv', index=False)
 
 #end Race
 

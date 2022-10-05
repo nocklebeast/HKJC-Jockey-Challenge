@@ -45,8 +45,9 @@ print(firstRace)
 print(lastRace)
 print(sVenue)
 
-sType = 'jkc'
- 
+jType = 'jkc'
+tType = 'tnc'
+
 #https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=en&date=2022-05-15&venue=ST&raceno=1
 
 #use these headless options to not have the browser pop up.
@@ -62,9 +63,16 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #get ALL jockey selections to get names and points of all the other jockeys.
 JockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
 print(JockeySelections)
-dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
-OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
-print(OtherNumber)
+dfOtherNumberJockey = JockeySelections[JockeySelections[jType+'Name'] == 'Others']
+OtherNumberJockey = dfOtherNumberJockey[jType+'OtherNumber'].loc[dfOtherNumberJockey.index[0]]
+print(OtherNumberJockey)
+
+
+TrainerSelections = pd.read_csv(path_to_directory + 'AllTrainerSelections' + '.csv')
+print(TrainerSelections)
+dfOtherNumberTrainer = TrainerSelections[TrainerSelections[tType+'Name'] == 'Others']
+OtherNumberTrainer = dfOtherNumberTrainer[tType+'OtherNumber'].loc[dfOtherNumberTrainer.index[0]]
+print(OtherNumberTrainer)
 
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
@@ -141,11 +149,11 @@ for iRace in range(firstRace,lastRace+1) :
 
     dfRaceEntry = pd.DataFrame()
     dfRaceEntry['horseno'] = dfH2[1]
-    dfRaceEntry[sType+'Name'] = dfJ2[1]
+    dfRaceEntry[jType+'Name'] = dfJ2[1]
     dfRaceEntry['Race'] = iRace
-    dfRaceEntry['tncName'] = dfT2[1]
+    dfRaceEntry[tType+'Name'] = dfT2[1]
 
-    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', sType+'Name','tncName'] )
+    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', jType+'Name',tType+'Name'] )
     dfRaceEntry['horseno'] = dfRaceEntry['horseno'].astype(int)
     print(dfRaceEntry)
 
@@ -154,19 +162,33 @@ for iRace in range(firstRace,lastRace+1) :
     #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
     print(dfRaceEntry)
     print(JockeySelections)
-    RaceEntry = dfRaceEntry.merge(JockeySelections, on=sType+'Name', how='left')
+    RaceEntryA = dfRaceEntry.merge(JockeySelections, on=jType+'Name', how='left')
+    print(RaceEntryA)
+
+    RaceEntryA[jType+'Number'].fillna(OtherNumberJockey,inplace=True)
+    #deal with "other"
+    RaceEntryA[jType+'Number'] = RaceEntryA[jType+'Number'].astype(int)
+    RaceEntryA.drop([jType+'OtherNumber'], axis=1, inplace=True)
+    print(RaceEntryA) 
+
+    #merge in trainer selections
+    #be sure to not throw away "other trainers"
+    #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
+    print(TrainerSelections)
+    RaceEntry = RaceEntryA.merge(TrainerSelections, on=tType+'Name', how='left')
     print(RaceEntry)
 
-    RaceEntry[sType+'Number'].fillna(OtherNumber,inplace=True)
+    RaceEntry[tType+'Number'].fillna(OtherNumberJockey,inplace=True)
     #deal with "other"
-    RaceEntry[sType+'Number'] = RaceEntry[sType+'Number'].astype(int)
-    RaceEntry.drop([sType+'OtherNumber'], axis=1, inplace=True)
-    print(RaceEntry)    
+    RaceEntry[tType+'Number'] = RaceEntry[tType+'Number'].astype(int)
+    RaceEntry.drop([tType+'OtherNumber'], axis=1, inplace=True)
+    print(RaceEntry) 
+
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
     #don't need the jockey names for jockey challenge, let's drop them. (just needed for merging selections and horseno)
     #perhaps should keep jockey names here?
-    RaceEntry.drop([sType+'Name'],axis=1,inplace=True)
+    RaceEntry.drop([jType+'Name'],axis=1,inplace=True)
 
     #create an exacta grid jockey race entries, then keep x != y.
     xyRace = pd.merge(RaceEntry,RaceEntry,how='cross')
@@ -174,7 +196,9 @@ for iRace in range(firstRace,lastRace+1) :
     xyRace.drop(['Race_y'],axis=1,inplace=True)
     xyRace.rename({'Race':'Race_x'}, axis=1)
 
-    xyRace = xyRace.reindex(columns=['horseno_x','horseno_y', sType+'Number_x', sType+'Number_y' ] )
+    xyRace = xyRace.reindex(columns=['horseno_x','horseno_y', \
+                            jType+'Number_x', jType+'Number_y', \
+                            tType+'Number_x', tType+'Number_y' ] )
     xyRace.sort_values(by=['horseno_x','horseno_y'], inplace=True)
     #print(xyRace.head())
 
@@ -183,16 +207,17 @@ for iRace in range(firstRace,lastRace+1) :
     xyzRace = xyzRace[xyzRace.horseno_x != xyzRace.horseno]
     xyzRace = xyzRace[xyzRace.horseno_y != xyzRace.horseno]
 
-    xyzRace.rename(columns={'horseno':'horseno_z', sType+'Number':sType+'Number_z' }, inplace=True)
-
+    xyzRace.rename(columns={'horseno':'horseno_z', jType+'Number':jType+'Number_z' }, inplace=True)
+    xyzRace.rename(columns={tType+'Number':tType+'Number_z' }, inplace=True)
     xyzRace = xyzRace.reindex(columns=['horseno_x','horseno_y','horseno_z', \
-                                        sType+'Number_x', sType+'Number_y', sType+'Number_z'  ])
+                                        jType+'Number_x', jType+'Number_y', jType+'Number_z' , \
+                                        tType+'Number_x', tType+'Number_y', tType+'Number_z'  ])
 
     xyzRace.sort_values(by=['horseno_x','horseno_y','horseno_z'], inplace=True)
 
     print(xyzRace)
     xyzRace.to_csv(path_to_directory + 'xyzRace' + sRace + '.csv', index=False)
-
+    
 #end of for loop on iRace
 
 browser.close

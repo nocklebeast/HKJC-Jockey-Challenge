@@ -59,7 +59,7 @@ for iRace in range(firstRace,lastRace+1) :
     #lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
     #lBetTypes=[ 'tceinv', 'fct', 'qin']
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']
-    lBetTypes=[ 'tceinv', 'fct', 'qin'] #, 'qpl']
+    lBetTypes=[ 'tceinv', 'fct', 'qin', 'qpl']
 
     for sType in lBetTypes:
         print(sRace)

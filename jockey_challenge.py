@@ -29,17 +29,20 @@ firstRace = int(RaceParameters.at[0,'firstRace'])
 lastRace = int(RaceParameters.at[0,'lastRace'])
 sVenue = RaceParameters.at[0,'sVenue']
 
-sType = 'jkc'
+jType = 'jkc'
+tType = 'tnc'
+jThing = 'Jockey'
+tThing = 'Trainer'
 
 #map of Jockey names to Jockey selection numbers.
-path_to_file = path_to_directory + 'AllJockeySelections' + '.csv'
+path_to_file = path_to_directory + 'All' + jThing + 'Selections' + '.csv'
 TodaysJockeySelections = pd.read_csv(path_to_file)
 print(TodaysJockeySelections.head(2))
 
-OtherNumber = TodaysJockeySelections[sType+'OtherNumber'][0]
-TodaysJockeySelections.drop(sType+'OtherNumber',axis=1,inplace=True)
-TodaysJockeySelections = TodaysJockeySelections.loc[TodaysJockeySelections[sType+'Name'] != 'Others' ]
-TodaysJockeySelections.sort_values(by=[sType+'Number',sType+'Name'],inplace=True)
+OtherNumber = TodaysJockeySelections[jType+'OtherNumber'][0]
+TodaysJockeySelections.drop(jType+'OtherNumber',axis=1,inplace=True)
+TodaysJockeySelections = TodaysJockeySelections.loc[TodaysJockeySelections[jType+'Name'] != 'Others' ]
+TodaysJockeySelections.sort_values(by=[jType+'Number',jType+'Name'],inplace=True)
 TodaysJockeySelections.reindex
 
 SimJockeyPoints = TodaysJockeySelections.copy(deep=True)
@@ -65,7 +68,8 @@ for iRace in range(firstRace,lastRace+1) :
     #print(JockeyTierceChance.head())
 #end iRace
 #JockeyTierceChance.sort_values(by=['Race','Jx','Jy','Jz'])
-JockeyTierceChance.to_csv(path_to_directory + 'JockeyTierceChance' + '.csv', index=False)
+JockeyTierceChance.to_csv(path_to_directory + jThing + 'TierceChance' + '.csv', index=False)
+
 
 # let's not do the weighted select by hand.
 #JockeyTierceChance['CumTierceCh'] = JockeyTierceChance[['Race','TierceCh']].groupby('Race').cumsum()
@@ -78,7 +82,7 @@ JockeyTierceChance.to_csv(path_to_directory + 'JockeyTierceChance' + '.csv', ind
 # select with weights below must be implemented similarly as calculating a cumulative chance above
 # (because I got the same result as above method as select with weights methods with the same random seed)
 
-#run a race day's simulation nSims times.
+#run a race day's simulation nSims times.  Choose a prime number so we never get cleanly rounded numbers.
 #nSims = 10007
 #nSims = 5003
 #nSims = 2003
@@ -97,21 +101,9 @@ for iter in range(nSims):
     
     JockeyTierce = JockeyTierceChance.copy(deep=True)
     #print(JockeyTierce.head(35))
-    # select a single (n=1) winning trifecta combination for each race.
-    #print("describe jockey tierce")
-    #print(JockeyTierce.describe())
-    
+    # select a single (n=1) winning trifecta combination for each 
     JockeyTierce['Race'] = JockeyTierce['Race'].astype(int)
-    #JockeyTierce['JNx'] = JockeyTierce['JNx'].astype(str)
-    #JockeyTierce['JNy'] = JockeyTierce['JNy'].astype(str)
-    #JockeyTierce['JNz'] = JockeyTierce['JNz'].astype(str)
-    #JockeyTierce['TierceCh'] = JockeyTierce['TierceCh'].astype(float)
-    #print(JockeyTierce.dtypes)
-
-    #simulated_winners = JockeyTierce.groupby('Race').sample(n=1, weights='TierceCh')
-    #simulated_winners = JockeyTierce.groupby('Race').sample() #n=1,weights='TierceCh')
     simulated_winners = JockeyTierce.groupby('Race').sample(n=1,weights='TierceCh')
-    #kkkkkkkkkkkkk
     simulated_winners['bWinner'] = 1
     #just keep the winner column, then merge back into JockeyTierceChance.
     simulated_winners = simulated_winners['bWinner']
@@ -130,63 +122,63 @@ for iter in range(nSims):
     Points = JockeyTierce.copy(deep=True)
     Points.drop(['Race','Hx','Hy','Hz','TierceCh'], axis=1, inplace=True)
     #print(Points.head())
-    #print(Points.dtypes)
-    #kkkkkkkk
     Points1 = Points.copy(deep=True)
     Points1['Points1'] = 12 * Points['bWinner']
-    Points1.drop([sType+'No_y',sType+'No_z'], axis=1, inplace=True)
-    Points1.drop([sType+'Ny',sType+'Nz'], axis=1, inplace=True)
-    Points1.rename(columns = {sType+'No_x':sType+'Number'}, inplace=True)
+
+    Points1.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
+    Points1.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+    Points1.drop([jType+'Ny',jType+'Nz'], axis=1, inplace=True)
+    Points1.drop([tType+'Ny',tType+'Nz'], axis=1, inplace=True)
     # group on name not number
-    Points1.drop(sType+'Number', axis=1, inplace=True)
-    Points1.rename(columns = {sType+'Nx':sType+'Name'}, inplace=True)
-    RaceDayPoints1 = Points1.groupby([sType+'Name']).sum().reset_index()
+    Points1.rename(columns = {jType+'Nx':jType+'Name'}, inplace=True)
+    Points1.rename(columns = {tType+'Nx':tType+'Name'}, inplace=True)
+    RaceDayPoints1 = Points1.groupby([jType+'Name']).sum().reset_index()
     RaceDayPoints1.rename(columns = {'bWinner':'nWins'}, inplace=True)
     #print(RaceDayPoints1)
     
     Points2 = Points.copy(deep=True)
-    #print(Points2.head(2))
     Points2['Points2'] = 6 * Points['bWinner']
-    Points2.drop([sType+'No_x',sType+'No_z'], axis=1, inplace=True)
-    Points2.drop([sType+'Nx',sType+'Nz'], axis=1, inplace=True)
-    Points2.rename(columns = {sType+'No_y':sType+'Number'}, inplace=True)
-    Points2.drop(sType+'Number', axis=1, inplace=True)
-    #print(Points2.tail())
-    Points2.rename(columns = {sType+'Ny':sType+'Name'}, inplace=True)
-    RaceDayPoints2 = Points2.groupby([sType+'Name']).sum().reset_index()
+    Points2.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
+    Points2.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+    Points2.drop([jType+'Nx',jType+'Nz'], axis=1, inplace=True)
+    Points2.drop([tType+'Nx',tType+'Nz'], axis=1, inplace=True)
+    Points2.rename(columns = {jType+'Ny':jType+'Name'}, inplace=True)
+    Points2.rename(columns = {tType+'Ny':tType+'Name'}, inplace=True)
+    RaceDayPoints2 = Points2.groupby([jType+'Name']).sum().reset_index()
     RaceDayPoints2.rename(columns = {'bWinner':'nPlaces'}, inplace=True)
     #print(RaceDayPoints2)
     
     Points3 = Points.copy(deep=True)
     Points3['Points3'] = 4 * Points['bWinner']
-    Points3.drop([sType+'No_x',sType+'No_y'], axis=1, inplace=True)
-    Points3.drop([sType+'Nx',sType+'Ny'], axis=1, inplace=True)
-    Points3.rename(columns = {sType+'No_z':sType+'Number'}, inplace=True)
-    Points3.drop(sType+'Number', axis=1, inplace=True)
-    Points3.rename(columns = {sType+'Nz':sType+'Name'}, inplace=True)
+    Points3.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
+    Points3.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+    Points3.drop([jType+'Nx',jType+'Ny'], axis=1, inplace=True)
+    Points3.drop([tType+'Nx',tType+'Ny'], axis=1, inplace=True)
+    Points3.rename(columns = {jType+'Nz':jType+'Name'}, inplace=True)
+    Points3.rename(columns = {tType+'Nz':tType+'Name'}, inplace=True)
     #print(Points3.tail())
-    RaceDayPoints3 = Points3.groupby([sType+'Name']).sum().reset_index()
+    RaceDayPoints3 = Points3.groupby([jType+'Name']).sum().reset_index()
     RaceDayPoints3.rename(columns = {'bWinner':'nShows'}, inplace=True)
     #print(RaceDayPoints3)
     
     #merge on jockey name, not number.
     #also merge in previous points in SimJockeyPoints
     mergeWithRaceDayPoints = SimJockeyPoints.copy(deep=True)
-    mergeWithRaceDayPoints.drop(columns=[sType+'Number','CurrentOdds','RemainingRides','TotalPoints','TotalWins','nRuns'],inplace=True)
+    mergeWithRaceDayPoints.drop(columns=[jType+'Number',jType+'CurrentOdds',jType+'RemainingRides','TotalPoints','TotalWins','nRuns'],inplace=True)
     RaceDayPoints = mergeWithRaceDayPoints.merge(RaceDayPoints1.merge(RaceDayPoints2.merge(RaceDayPoints3, 
-                    on=sType+'Name', how='inner'), 
-                    on=sType+'Name', how='inner'),
-                    on=sType+'Name', how='inner')
+                    on=jType+'Name', how='inner'), 
+                    on=jType+'Name', how='inner'),
+                    on=jType+'Name', how='inner')
 
     #add total simulated points and previous points from the actual race day.
     RaceDayPoints['Points'] = RaceDayPoints['Points1'] \
         + RaceDayPoints['Points2'] \
         + RaceDayPoints['Points3'] \
-        + RaceDayPoints[sType+'Points']
+        + RaceDayPoints[jType+'Points']
     #SimJockeyPoints contains the points for each jockey from previous races 
     # (at some point let's include number of previous 1st,2nd,3rd,4th in that file too)
     #print(RaceDayPoints)
-    RaceDayPoints.drop([sType+'Points'], axis=1, inplace=True)
+    RaceDayPoints.drop([jType+'Points'], axis=1, inplace=True)
     RaceDayPoints.drop(['Points1','Points2','Points3'], axis=1, inplace=True)
     #print(RaceDayPoints)
     
@@ -267,7 +259,7 @@ for iter in range(nSims):
     #merge on name, not number. we'll continue to keep track of average points and wins for 
     #each individual (other) jockey... and then sum over all the wins and points for each
     #winning individual (other) jockey.
-    SimJockeyPoints = SimJockeyPoints.merge(RaceDayPoints,on=sType+'Name', how='inner')
+    SimJockeyPoints = SimJockeyPoints.merge(RaceDayPoints,on=jType+'Name', how='inner')
     #print(SimJockeyPoints)
     
     #SimJockeyPoints['isWinner'] = SimJockeyPoints['Points'] == MaxPoints['Points']
@@ -293,13 +285,13 @@ print(nUnbrokenTies)
 #then add up points and wins for the other jockeys and tack back onto named jockeys that one 'other' row
 
 SimNamedJockeys = SimJockeyPoints.copy(deep=True)
-SimNamedJockeys = SimNamedJockeys.loc[ SimJockeyPoints[sType+'Number'] != OtherNumber]
+SimNamedJockeys = SimNamedJockeys.loc[ SimJockeyPoints[jType+'Number'] != OtherNumber]
 SimNamedJockeys['ExpectedPoints'] = SimNamedJockeys['TotalPoints'] / SimNamedJockeys['nRuns']
 SimNamedJockeys['RawChance'] = 100 * SimNamedJockeys['TotalWins'] / SimNamedJockeys['nRuns'] 
 #print(SimNamedJockeys)
 
 SimOtherJockeys = SimJockeyPoints.copy(deep=True)
-SimOtherJockeys = SimOtherJockeys.loc[ SimJockeyPoints[sType+'Number'] == OtherNumber]
+SimOtherJockeys = SimOtherJockeys.loc[ SimJockeyPoints[jType+'Number'] == OtherNumber]
 SimOtherJockeys['ExpectedPoints'] = SimOtherJockeys['TotalPoints'] / SimOtherJockeys['nRuns']
 SimOtherJockeys['RawChance'] = 100 * SimOtherJockeys['TotalWins'] / SimOtherJockeys['nRuns'] 
 #print(SimOtherJockeys)
@@ -308,7 +300,7 @@ OtherJockey = SimOtherJockeys.copy(deep=True)
 OtherJockeySum = OtherJockey.sum(axis=0)
 OtherJockeyMax = OtherJockey.max(axis=0)
 SingleOtherJockey = OtherJockeyMax.copy(deep=True)
-SingleOtherJockey[sType+'Name'] = 'Other'
+SingleOtherJockey[jType+'Name'] = 'Other'
 SingleOtherJockey['RawChance'] = OtherJockeySum['RawChance']
 
 #print(type(SingleOtherJockey)) #series
@@ -350,7 +342,7 @@ SimJockeyChallenge.replace([np.inf],9999, inplace=True)
 
 
 print(SimJockeyChallenge)
-SimJockeyChallenge.to_csv(path_to_directory + 'SimJockeyChallenge' + '.csv', index=False)
+SimJockeyChallenge.to_csv(path_to_directory + 'Sim' + jThing + 'Challenge' + '.csv', index=False)
 SumJKC = SimJockeyChallenge.sum(axis=0)
 print(SumJKC)
 

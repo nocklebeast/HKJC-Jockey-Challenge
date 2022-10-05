@@ -77,10 +77,10 @@ for sType in ['jkc','tnc']:
     dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace=-1,value=0)
 
 
-    dfJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name','opOdds':'OpeningOdds'}, inplace=True)
-    dfJockeys.rename(columns={'preOdds':'PreviousOdds','latestOdds':'CurrentOdds','Points':sType+'Points'}, inplace=True)
-    dfJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
-    dfJockeys['Rides'] = dfJockeys['Rides'].astype(int)
+    dfJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name','opOdds':sType+'OpeningOdds'}, inplace=True)
+    dfJockeys.rename(columns={'preOdds':sType+'PreviousOdds','latestOdds':sType+'CurrentOdds','Points':sType+'Points'}, inplace=True)
+    dfJockeys.rename(columns={'sRides':sType+'Rides','RRides':sType+'RemainingRides'}, inplace=True)
+    dfJockeys[sType+'Rides'] = dfJockeys[sType+'Rides'].astype(int)
     dfJockeys.drop(['code','status','sStatus','order','combId','lineId','betSelDetails'],axis=1, inplace=True)
     #FYI, there's a ton of info after the first race in betSelDetails... a sample
     #betSelDetails {'2': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 7, 'place4thDouble': 0.0}, '4': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 6, 'place4thDouble': 0.0}, '1': {'raceNo': 0, 'points': 12.0, 'place1st': 1, 'dh1st': False, 'point1st': 12.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 8, 'place4thDouble': 0.0}, '3': {'raceNo': 0, 'points': 24.0, 'place1st': 2, 'dh1st': False, 'point1st': 24.0, 'place2nd': 0, 'dh2nd': False, 'point2nd': 0.0, 'place3rd': 0, 'dh3rd': False, 'point3rd': 0.0, 'place4th': 0, 'nmtr4th': 0, 'dmtr4th': 1, 'rmRides': 6, 'place4thDouble': 0.0}}
@@ -99,10 +99,10 @@ for sType in ['jkc','tnc']:
 
     JockeySelections = dfJockeys.copy(deep=True)
     #
-    JockeySelections.drop(['OpeningOdds', 'inPlayUpTo', 'stage', \
+    JockeySelections.drop([sType+'OpeningOdds', 'inPlayUpTo', 'stage', \
                     'close', 'firstRace', 'excludeRace', \
-                    'Rides', 'lastRace', \
-                    'updResultRaceNo', 'PreviousOdds' ], axis=1, inplace=True)
+                    sType+'Rides', 'lastRace', \
+                    'updResultRaceNo', sType+'PreviousOdds' ], axis=1, inplace=True)
     #print("JockeySelections")
     #print(JockeySelections)
     JockeySelections.to_csv(path_to_directory + Jword + 'Selections' + '.csv', index=False)
@@ -142,12 +142,12 @@ for sType in ['jkc','tnc']:
 
     
     dfOtherJockeys.rename(columns={'Points':sType+'Points'}, inplace=True)
-    dfOtherJockeys.rename(columns={'sRides':'Rides','RRides':'RemainingRides'}, inplace=True)
+    dfOtherJockeys.rename(columns={'sRides':sType+'Rides','RRides':sType+'RemainingRides'}, inplace=True)
     #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
     #print(dfOtherJockeys)
 
     OtherJockeySelections = dfOtherJockeys.copy(deep=True)
-    OtherJockeySelections.drop(['Rides'], axis=1, inplace=True)
+    OtherJockeySelections.drop([sType+'Rides'], axis=1, inplace=True)
     #print("OtherJockeySelections")
     #print(OtherJockeySelections)
     OtherJockeySelections.to_csv(path_to_directory + 'Other' + Jword +'Selections' + '.csv', index=False)
@@ -158,7 +158,7 @@ for sType in ['jkc','tnc']:
     dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
     
     OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
-    OtherOdds = dfOtherNumber['CurrentOdds'].loc[dfOtherNumber.index[0]]
+    OtherOdds = dfOtherNumber[sType+'CurrentOdds'].loc[dfOtherNumber.index[0]]
     #print(OtherNumber)
     #print(OtherOdds)
 
@@ -168,7 +168,7 @@ for sType in ['jkc','tnc']:
     OtherJockeySelections[sType+'OtherNumber'] = OtherNumber
     AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
     #fill in the current Odds for other jockeys with the correct odds for others.
-    AllJockeySelections['CurrentOdds'].fillna(OtherOdds,inplace=True)
+    AllJockeySelections[sType+'CurrentOdds'].fillna(OtherOdds,inplace=True)
     AllJockeySelections.to_csv(path_to_directory + 'All' + Jword + 'Selections' + '.csv', index=False)
     print(AllJockeySelections)
 
