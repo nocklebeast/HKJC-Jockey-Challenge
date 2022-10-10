@@ -55,6 +55,7 @@ base_url = 'https://bet.hkjc.com/racing/getJSON.aspx'
 lDataType = ['jkc','tnc'] #jockey/trainer.
 
 for sType in lDataType:
+    #deal with race > 1 and tnc.
     #sType = "jkc"
     print(sType)
     sParams = 'type=' + sType + '&date=' + sDate + '&venue=' + sVenue  

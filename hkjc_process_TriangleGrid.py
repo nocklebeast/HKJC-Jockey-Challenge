@@ -19,8 +19,8 @@ firstRace = int(RaceParameters.at[0,'firstRace'])
 lastRace = int(RaceParameters.at[0,'lastRace'])
 sVenue = RaceParameters.at[0,'sVenue']
 
-#lBetTypes=['qin', 'qpl']
-lBetTypes=['qin']  #just quinella.
+lBetTypes=['qin', 'qpl']
+#lBetTypes=['qin']  #just quinella.
 
 #let's process races within the range set by first and last race.
 for iRace in range(firstRace,lastRace+1) :
@@ -142,7 +142,6 @@ for iRace in range(firstRace,lastRace+1) :
 
     #end bet types
 
-    """
     #let's merge the two triangular grid chance types.
 
     #for sType in lBetTypes:
@@ -174,7 +173,7 @@ for iRace in range(firstRace,lastRace+1) :
     #merge to create square exacta grid.
     exQinQplChance = pd.concat([QinQplChance, yxQinQplChance],  axis=0 ) #stack vertically.
     exQinQplChance.sort_values(by=['horseno_x','horseno_y'], inplace=True)
-    print(exQinQplChance)
+    print(exQinQplChance.head())
 
     #renormalize chances.
 
@@ -182,13 +181,18 @@ for iRace in range(firstRace,lastRace+1) :
     print(AllTotals)
     exQinQplChance['qinChance'] = exQinQplChance['qinChance'] / AllTotals['qinChance'] 
     exQinQplChance['qplChance'] = exQinQplChance['qplChance'] / AllTotals['qplChance'] 
-    print(exQinQplChance)
+    print(exQinQplChance.head())
     #check normalization
     AllTotals = exQinQplChance.sum(axis=0) 
     print(AllTotals)
 
     exQinQplChance.to_csv(path_to_directory + 'exQinQplChance' + sRace + '.csv', index=False)
-    """
+
+    #create a yz version of the qin-qpl exacta grid.
+    yzQinQplChance = exQinQplChance.copy(deep=True)
+    yzQinQplChance = exQinQplChance.rename(columns={"horseno_x": "horseno_y", "horseno_y": "horseno_z"})
+    print(yzQinQplChance.head())
+    yzQinQplChance.to_csv(path_to_directory + 'yzQinQplChance' + sRace + '.csv', index=False)
 
 #end iRace
 
