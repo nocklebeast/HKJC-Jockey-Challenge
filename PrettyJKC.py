@@ -111,6 +111,7 @@ for sType in ['tnc','jkc']:
         PrettyOdds = PrettyJKC.copy(deep=True)
         PrettyOdds.drop([sType+'Number', sThing+' Points','Expected Points','Chance',sType+'RemainingRides'], axis=1, inplace=True)
         PrettyOdds.rename(columns={'Current Odds': 'Current HKJC Odds'}, inplace=True)
+        PrettyOdds.sort_values(by='Estimated Odds',ascending=True,inplace=True)
         print(PrettyOdds)
 
         #hints on tables.
@@ -146,10 +147,14 @@ for sType in ['tnc','jkc']:
         axes[1].set_title(sTitle)
 
         #this sets the title of the set of (sub)plots
+        PrettyJKC.sort_values(by='Estimated Odds',ascending=False,inplace=True)
+        Fave2Win = PrettyJKC[sThing][0]
+        sOverallTitle = Fave2Win + ' projected to win '
+        print(Fave2Win)
         if sVenue == "ST": 
             sFullVenue = "Sha Tin"
         else: sFullVenue = "Happy Valley"
-        sOverallTitle = sThing+" Challenge" + "\n" + "before the start of race " + sRace + " on " + sDate + " at " + sFullVenue
+        sOverallTitle = sOverallTitle + sThing+" Challenge" + "\n" + "(before the start of race " + sRace + " on " + sDate + " at " + sFullVenue + ")"
         plt.suptitle(sOverallTitle) #, fontweight='medium')
 
         #let's see all the Jockeys and labels on vertical axis.
