@@ -27,7 +27,7 @@ tce2exacta.py
 
 jockey_challenge.py
 
-python
+PrettyJKC.py
 
 
 

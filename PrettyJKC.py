@@ -50,6 +50,7 @@ for sType in ['tnc','jkc']:
 
         PrettyJKC.drop(['TotalPoints', 'RawChance','Pay','TotalWins','nRuns'], axis=1, inplace=True)
         PrettyJKC.rename(columns={'sPay':'Estimated Odds'}, inplace=True)
+        PrettyJKC['Estimated Odds'] = PrettyJKC['Estimated Odds'].astype(float)
         PrettyJKC.rename(columns={sType+'Name':sThing}, inplace=True)
         PrettyJKC.rename(columns={sType+'CurrentOdds':'Current Odds'}, inplace=True)
         PrettyJKC.rename(columns={sType+'Points':sThing +' Points'}, inplace=True)
