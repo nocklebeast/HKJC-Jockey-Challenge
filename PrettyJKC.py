@@ -55,17 +55,10 @@ for sType in ['tnc','jkc']:
         PrettyJKC.rename(columns={sType+'CurrentOdds':'Current Odds'}, inplace=True)
         PrettyJKC.rename(columns={sType+'Points':sThing +' Points'}, inplace=True)
         PrettyJKC.rename(columns={'ExpectedPoints':'Expected Points'}, inplace=True)
+        #order jockeys by expected points.
         PrettyJKC.sort_values(by='Expected Points',ascending=False,inplace=True)
 
-        #let's build color array based on if HKJC's odds are greater than our estimated pay/odds.
-        colors = PrettyJKC.copy(deep=True)
-        colors['HKJCPay'] = colors['Current Odds'].astype(float)
-        colors['OurPay'] = colors['Estimated Odds'].astype(float)
-        colors['Nice Price'] = colors['HKJCPay'] > colors['OurPay']
-        colors.loc[ colors['Nice Price'] == True, 'color'] = 'g'
-        colors.loc[ colors['Nice Price'] == False, 'color'] = 'w'
-        #print(colors)
-        print(PrettyJKC)
+
 
         ##########################################################################################
         ### POINTS ### POINTS ### POINTS ### POINTS ### POINTS ### POINTS 
@@ -109,10 +102,23 @@ for sType in ['tnc','jkc']:
         axes[0].set_title(sPlotTitle)
 
         #create a simple/pretty dataframe for the odds table.
+        #sort again by odds, so order and colors are correct on odds table.
+        PrettyJKC.sort_values(by='Estimated Odds',ascending=True,inplace=True)
         PrettyOdds = PrettyJKC.copy(deep=True)
         PrettyOdds.drop([sType+'Number', sThing+' Points','Expected Points','Chance',sType+'RemainingRides'], axis=1, inplace=True)
         PrettyOdds.rename(columns={'Current Odds': 'Current HKJC Odds'}, inplace=True)
-        PrettyOdds.sort_values(by='Estimated Odds',ascending=True,inplace=True)
+        
+        #let's build color array based on if HKJC's odds are greater than our estimated pay/odds.
+        #AFTER sorting jockeys by estimated odds.
+        colors = PrettyJKC.copy(deep=True)
+        colors['HKJCPay'] = colors['Current Odds'].astype(float)
+        colors['OurPay'] = colors['Estimated Odds'].astype(float)
+        colors['Nice Price'] = colors['HKJCPay'] > colors['OurPay']
+        colors.loc[ colors['Nice Price'] == True, 'color'] = 'g'
+        colors.loc[ colors['Nice Price'] == False, 'color'] = 'w'
+        #print(colors)
+        print(PrettyJKC)
+
         print(PrettyOdds)
 
         #hints on tables.
