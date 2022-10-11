@@ -19,8 +19,8 @@ Sample output:
 
 (potential value plays are highlighted in green in the odds table.)
 
-![jkc_points](https://user-images.githubusercontent.com/69921853/194930302-34d153b6-12f5-4808-8388-04b37e41fd95.jpg)
+![jkc_points](https://user-images.githubusercontent.com/69921853/195150494-b8945974-83f2-4b0c-af96-fb3ad395e39b.jpg)
 
-![jkc_odds](https://user-images.githubusercontent.com/69921853/194930323-162a0ac1-eed9-4c27-9193-20697397c07a.jpg)
+![jkc_odds](https://user-images.githubusercontent.com/69921853/195150517-c2dfe4d9-c9e0-44e2-92fc-f556cf683039.jpg)
 
 See order of python files.txt for notes on running the scripts.
