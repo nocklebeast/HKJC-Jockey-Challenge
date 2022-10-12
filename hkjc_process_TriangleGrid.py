@@ -60,6 +60,12 @@ for iRace in range(firstRace,lastRace+1) :
             lHorses = str(lOddsSemiSplit[0]).split("-")
             #switch scratched horses "SCR" to "0" on the odds.
             lOddsSemiSplit[1] = lOddsSemiSplit[1].replace("SCR","0")
+            #it appears that "---" means that the bet type is not offered valid.
+            #if there isn't enough horses the quinella place bet is not valid and the odds
+            # quoted are "---" instead of "SCR" or an actual number.... what to do in this
+            # circumstance.... let's just try saying the odds are all "1" and then the 
+            # QP grid will be a random/equal chance matrix.
+            lOddsSemiSplit[1] = lOddsSemiSplit[1].replace("---","1")
             lOdds = [ int(lHorses[0]), int(lHorses[1]) , float(lOddsSemiSplit[1]), int(lOddsSemiSplit[2]) ]
             #print(lOdds)
             ListOfFields.append(lOdds)

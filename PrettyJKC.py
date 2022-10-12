@@ -56,7 +56,7 @@ for sType in ['tnc','jkc']:
         PrettyJKC.rename(columns={sType+'Points':sThing +' Points'}, inplace=True)
         PrettyJKC.rename(columns={'ExpectedPoints':'Expected Points'}, inplace=True)
         #order jockeys by expected points.
-        PrettyJKC.sort_values(by='Expected Points',ascending=False,inplace=True)
+        PrettyJKC.sort_values(by=['Expected Points','Estimated Odds','Current Odds'],ascending=False,inplace=True)
 
 
 
