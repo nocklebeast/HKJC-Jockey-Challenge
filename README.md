@@ -19,9 +19,9 @@ Sample output:
 
 (potential value plays are highlighted in green in the odds table.)
 
-![tnc_points](https://user-images.githubusercontent.com/69921853/195210291-7a8d91ae-cdb8-46ee-a823-7627f2eb6da5.jpg)
+![tnc_points](https://user-images.githubusercontent.com/69921853/195379590-09409d1a-3485-4869-a0de-556f9ea8bd5f.jpg)
 
-![tnc_odds](https://user-images.githubusercontent.com/69921853/195210306-4b8b3d49-02ed-44e3-8ae7-a8594c6ead1b.jpg)
+![tnc_odds](https://user-images.githubusercontent.com/69921853/195379625-9c23f588-ac5a-4fa6-878d-e56274c06410.jpg)
 
 
 See order of python files.txt for notes on running the scripts.
