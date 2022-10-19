@@ -75,7 +75,7 @@ for sType in ['jkc','tnc']:
     dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace='---',value='0')
     dfJockeys['Points'] = dfJockeys['Points'].astype(int)
     dfJockeys['Points'] = dfJockeys['Points'].replace(to_replace=-1,value=0)
-
+    
 
     dfJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name','opOdds':sType+'OpeningOdds'}, inplace=True)
     dfJockeys.rename(columns={'preOdds':sType+'PreviousOdds','latestOdds':sType+'CurrentOdds','Points':sType+'Points'}, inplace=True)
@@ -169,6 +169,9 @@ for sType in ['jkc','tnc']:
     AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
     #fill in the current Odds for other jockeys with the correct odds for others.
     AllJockeySelections[sType+'CurrentOdds'].fillna(OtherOdds,inplace=True)
+    #"LSE" is "out" mathematically impossible to win, let's give that jockey odds of 9999 (which is a number)
+    AllJockeySelections[sType+'CurrentOdds'] = AllJockeySelections[sType+'CurrentOdds'].replace(to_replace='LSE',value='9999')
+
     AllJockeySelections.to_csv(path_to_directory + 'All' + Jword + 'Selections' + '.csv', index=False)
     print(AllJockeySelections)
 

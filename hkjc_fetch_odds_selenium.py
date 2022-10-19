@@ -10,12 +10,11 @@
 
 #from tracemalloc import stop
 #import urllib.request as ul
-from tracemalloc import stop
 from bs4 import BeautifulSoup as soup
 import pandas as pd
 import json
 import os
-from multiprocessing import Process
+#from multiprocessing import Process
 
 import requests
 import time 

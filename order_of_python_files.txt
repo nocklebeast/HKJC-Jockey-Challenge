@@ -1,8 +1,7 @@
-
 edit and run, or just edit race_parameters.txt.
 race_parameters.py  
 
-#fetches (tierce) odds from hkjc.com,
+#fetches odds from hkjc.com,
 hkjc_fetch_odds_selenium.py 
 
 #fetches jockey challenge odds from hkjc.com

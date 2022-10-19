@@ -180,17 +180,26 @@ for sType in ['tnc','jkc']:
         PrettyJKC.drop([sType+'RemainingRides'], axis=1, inplace=True)
 
         PieJKC = PrettyJKC.copy(deep=True)
+        print(PieJKC)
+   
 
         #remove low probability jockeys.  Keep jockeys greater than minPct chance.
         minPct = 2.4
         PieJKC = PieJKC[ PieJKC['Chance'] > minPct]
-        print(PieJKC)
+        #print(PieJKC)
+        
         #replace last probablities with "The Rest"
         AllTotals = PieJKC.sum(axis=0)
-        print(AllTotals)
+        #print(AllTotals)
         #JockeyNumber  jockeyName  CurrentOdds  JockeyPoints  ExpectedPoints  Chance   Pay
-        PieJKC.loc[len(PieJKC.index)] = [99, 'The Rest', 999, 0, 0, 100-AllTotals['Chance'], 999]
+        #need to add a new row for "The Rest".
+        TheRest = [99, 'The Rest', 999, 0, 0, 100-AllTotals['Chance'], 999]  
+        #convert that list to a dictionary and then a dataframe and concat the two dataframes to append the row.
+        dctTheRest = dict(zip(PieJKC.columns, TheRest))
+        dfTheRest = pd.DataFrame(dctTheRest, index=[0])
+        #print(dfTheRest)
 
+        PieJKC = pd.concat([PieJKC, dfTheRest], axis=0)
         print(PieJKC)
 
         plt.pie(PieJKC["Chance"], 
