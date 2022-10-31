@@ -58,34 +58,37 @@ for sType in lDataType:
     #deal with race > 1 and tnc.
     #sType = "jkc"
     print(sType)
-    sParams = 'type=' + sType + '&date=' + sDate + '&venue=' + sVenue  
-    race_url = base_url + '?' + sParams
-    print(race_url)
+    if sType == 'tnc' and firstRace > 1:  
+        print('There is not trainer challenge after the first race')
+    else:
+        sParams = 'type=' + sType + '&date=' + sDate + '&venue=' + sVenue  
+        race_url = base_url + '?' + sParams
+        print(race_url)
 
-    WebDriverOptions = Options()
-    WebDriverOptions.headless = True
+        WebDriverOptions = Options()
+        WebDriverOptions.headless = True
 
-    browser = webdriver.Firefox(options=WebDriverOptions)
-    browser.get(race_url)
-    time.sleep(3)
-    #print("browser page source")
-    #print(browser.page_source)
-    txtPage = browser.page_source
-    browser.close
+        browser = webdriver.Firefox(options=WebDriverOptions)
+        browser.get(race_url)
+        time.sleep(3)
+        #print("browser page source")
+        #print(browser.page_source)
+        txtPage = browser.page_source
+        browser.close
 
-    print(txtPage)
+        print(txtPage)
 
-    mySoup = soup(txtPage, 'html.parser')
-    #print(mySoup)
-    #print("just the text")
-    #besure to include the (), get something different otherwise.
-    justText = mySoup.get_text()
-    print(justText)
+        mySoup = soup(txtPage, 'html.parser')
+        #print(mySoup)
+        #print("just the text")
+        #besure to include the (), get something different otherwise.
+        justText = mySoup.get_text()
+        print(justText)
 
-    #write text file of the string for later processing.
-    path_to_file = path_to_directory  + '\\' + sType  + '.txt'
+        #write text file of the string for later processing.
+        path_to_file = path_to_directory  + '\\' + sType  + '.txt'
 
-    #use encoding='utf-8' when writing chinese characters.
-    with open(path_to_file,'w',encoding='utf-8') as oddsFile:
-        oddsFile.write(justText)
-        oddsFile.close()
+        #use encoding='utf-8' when writing chinese characters.
+        with open(path_to_file,'w',encoding='utf-8') as oddsFile:
+            oddsFile.write(justText)
+            oddsFile.close()
