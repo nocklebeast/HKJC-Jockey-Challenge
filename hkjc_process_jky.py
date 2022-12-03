@@ -11,6 +11,7 @@ pd.set_option('display.max_rows',None)
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 for sType in ['jkc','tnc']:
     if sType == 'jkc':
@@ -21,10 +22,7 @@ for sType in ['jkc','tnc']:
         Jword = 'Trainer'
 
     #print(path_to_directory)
-    path_to_file = path_to_directory + sType + '.txt' 
-    #also works for trainers.
-    #path_to_file = path_to_directory + 'tnc.txt' 
-    #print(path_to_file)
+    path_to_file = path_to_raw + sType + '.txt' 
 
     with open(path_to_file,mode='r', encoding='utf-8') as oddsFile:
         sRawJockey = oddsFile.read()

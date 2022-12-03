@@ -8,6 +8,7 @@ pd.set_option('display.max_rows',None)
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
@@ -30,7 +31,7 @@ for iRace in range(firstRace,lastRace+1) :
     for sType in lBetTypes:
         print(sType)
 
-        path_to_file = path_to_directory + sType + sRace + '.txt'
+        path_to_file = path_to_raw + sType + sRace + '.txt'
         print(path_to_file)
 
         with open(path_to_file,'r') as oddsFile:

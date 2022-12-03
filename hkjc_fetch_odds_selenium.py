@@ -14,6 +14,8 @@ from bs4 import BeautifulSoup as soup
 import pandas as pd
 import json
 import os
+import shutil
+
 #from multiprocessing import Process
 
 import requests
@@ -91,11 +93,24 @@ def fetch_odds(RaceNo: int, sDataType: str, sRaceDate: str, sRaceVenue: str,  pa
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
-path_to_directory = cwd + '\\odds_files\\'
+path_to_directory = cwd + '\\odds_files\\' 
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
+print(path_to_raw)
+
+try:
+    os.mkdir(path_to_raw)
+except OSError as error:
+    print(error)
+
+
+
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
 print(RaceParameters)
+
+#copy race_parameters into raw odds
+shutil.copyfile(path_to_directory + 'race_parameters.txt', path_to_raw + 'race_parameters.txt')
 
 sDate = RaceParameters.at[0,'sDate']
 #sRace = RaceParameters.at[0,'sRace']
@@ -118,7 +133,7 @@ for iRace in range(firstRace,lastRace+1) :
     for sType in lBetTypes:
         print(sRace)
         print(sType)
-        fetch_odds(sRace,sType, sDate, sVenue,  path_to_directory)
+        fetch_odds(sRace,sType, sDate, sVenue,  path_to_raw)
 
     #doesn't seem to be any faster
     """
@@ -137,9 +152,10 @@ for iRace in range(firstRace,lastRace+1) :
         p4.join()
 
     """
-
+    
     #end for loop on lBetTypes
 #end of for loop on iRace
+
 print("FINISHED FETCHING ODDS")
 print()
 print()

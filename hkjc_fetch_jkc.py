@@ -29,6 +29,7 @@ from selenium.webdriver.common.by import By
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
@@ -86,7 +87,7 @@ for sType in lDataType:
         print(justText)
 
         #write text file of the string for later processing.
-        path_to_file = path_to_directory  + '\\' + sType  + '.txt'
+        path_to_file = path_to_raw  + '\\' + sType  + '.txt'
 
         #use encoding='utf-8' when writing chinese characters.
         with open(path_to_file,'w',encoding='utf-8') as oddsFile:

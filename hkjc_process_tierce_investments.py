@@ -2,6 +2,7 @@ from xml.etree.ElementTree import TreeBuilder
 import pandas as pd
 import numpy as np
 import os
+import shutil
 
 pd.set_option('display.max_rows',None)
 
@@ -11,6 +12,14 @@ np.random.seed(10)
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
+
+#let's zip up the raw data folder real quick.
+zipped_filename_with_path_no_extenstion = path_to_directory + '\\odds_raw'
+format = 'zip'
+#shutil.make_archive(path and filename of the archive, format, path to directory to be zipped)
+shutil.make_archive(zipped_filename_with_path_no_extenstion, format, path_to_raw)
+#shutil.unpack_archive(filename [, extract_dir [, format]])
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
 RaceParameters = pd.read_csv(path_to_file)  
@@ -29,7 +38,7 @@ for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
     print(sRace)
 
-    path_to_file = path_to_directory + sType + sRace + '.txt'
+    path_to_file = path_to_raw + sType + sRace + '.txt'
     print(path_to_file)
 
     with open(path_to_file,'r') as oddsFile:
