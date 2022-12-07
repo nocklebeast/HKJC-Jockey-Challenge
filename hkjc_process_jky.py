@@ -24,8 +24,13 @@ for sType in ['jkc','tnc']:
     #print(path_to_directory)
     path_to_file = path_to_raw + sType + '.txt' 
 
-    with open(path_to_file,mode='r', encoding='utf-8') as oddsFile:
-        sRawJockey = oddsFile.read()
+    try:
+        with open(path_to_file,mode='r', encoding='utf-8') as oddsFile:
+            sRawJockey = oddsFile.read()
+    except :
+        print('failed to open ' + path_to_file  + '. Perhaps there is not ' + sType + ' challenge today.')
+        break
+
     #print(sRawJockey)
     sJockey = sRawJockey
     dJockeyInfo = json.loads(sJockey)
@@ -108,65 +113,78 @@ for sType in ['jkc','tnc']:
     #other jockeys  
     #list of dictionaries corresponding to each jockey with a "other" jockey/selection number.
     lOther = dJockeyInfo.get('OS')
-    
-    #print(lOther)
-    #create empty dataframe with the correct columns, will concat to later.
-    dfOtherJockeys = pd.DataFrame(columns=lOther[0].keys())
+    #on special occassions (like HK International Races) there are not "other jockeys".
+    #let's check to see if we have other jockeys.
+    if len(lOther) <= 0:
+        print("no other jockeys today")
+        OtherNumber = 0
+        OtherOdds = 999
+    else:
 
-    for iOther in range(0,len(lOther)  ):
-        dSingleJockey = dict()
-        for kJockey, vJockey in lOther[iOther].items():
-            #print(kJockey, vJockey)
-            lOneThing = list()
-            lOneThing.append(vJockey)
-            dSingleJockey[kJockey] = lOneThing
-        dfSingleJockey = pd.DataFrame.from_dict(dSingleJockey)
-        #print(dfSingleJockey)
-        # do not know what negative points mean in the betSelDetails for individual other jockeys.
-        # has no implact on the total point calculation
-        dfOtherJockeys = pd.concat([dfOtherJockeys,dfSingleJockey],axis=0)
-        #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
+        #print(lOther)
+        #create empty dataframe with the correct columns, will concat to later.
+        dfOtherJockeys = pd.DataFrame(columns=lOther[0].keys())
 
-    dfOtherJockeys.to_csv(path_to_directory + 'RawOther' + Jword + 's' + '.csv', index=False)
+        for iOther in range(0,len(lOther)  ):
+            dSingleJockey = dict()
+            for kJockey, vJockey in lOther[iOther].items():
+                #print(kJockey, vJockey)
+                lOneThing = list()
+                lOneThing.append(vJockey)
+                dSingleJockey[kJockey] = lOneThing
+            dfSingleJockey = pd.DataFrame.from_dict(dSingleJockey)
+            #print(dfSingleJockey)
+            # do not know what negative points mean in the betSelDetails for individual other jockeys.
+            # has no implact on the total point calculation
+            dfOtherJockeys = pd.concat([dfOtherJockeys,dfSingleJockey],axis=0)
+            #dfJockeys = dfJockeys.append(dfSingleJockey, ignore_index=True)
 
-    dfOtherJockeys.drop(['nameCH',],axis= 1, inplace=True  )
-    dfOtherJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name'}, inplace=True)
-    dfOtherJockeys[sType+'Number'] = dJockeyInfo.get('OTHER_NO')
-    dfOtherJockeys.drop(['code','order','betSelDetails'],axis=1, inplace=True)
-    dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace='---',value='0')
-    dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
-    #sometimes jockey club reports other points as "-1" ???? just reset to 0 I think.
-    dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace=-1,value=0)
+        dfOtherJockeys.to_csv(path_to_directory + 'RawOther' + Jword + 's' + '.csv', index=False)
 
-    
-    dfOtherJockeys.rename(columns={'Points':sType+'Points'}, inplace=True)
-    dfOtherJockeys.rename(columns={'sRides':sType+'Rides','RRides':sType+'RemainingRides'}, inplace=True)
-    #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
-    #print(dfOtherJockeys)
+        dfOtherJockeys.drop(['nameCH',],axis= 1, inplace=True  )
+        dfOtherJockeys.rename(columns={'num':sType+'Number','nameEN':sType+'Name'}, inplace=True)
+        dfOtherJockeys[sType+'Number'] = dJockeyInfo.get('OTHER_NO')
+        dfOtherJockeys.drop(['code','order','betSelDetails'],axis=1, inplace=True)
+        dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace='---',value='0')
+        dfOtherJockeys['Points'] = dfOtherJockeys['Points'].astype(int)
+        #sometimes jockey club reports other points as "-1" ???? just reset to 0 I think.
+        dfOtherJockeys['Points'] = dfOtherJockeys['Points'].replace(to_replace=-1,value=0)
 
-    OtherJockeySelections = dfOtherJockeys.copy(deep=True)
-    OtherJockeySelections.drop([sType+'Rides'], axis=1, inplace=True)
-    #print("OtherJockeySelections")
-    #print(OtherJockeySelections)
-    OtherJockeySelections.to_csv(path_to_directory + 'Other' + Jword +'Selections' + '.csv', index=False)
+        
+        dfOtherJockeys.rename(columns={'Points':sType+'Points'}, inplace=True)
+        dfOtherJockeys.rename(columns={'sRides':sType+'Rides','RRides':sType+'RemainingRides'}, inplace=True)
+        #dfOtherJockeys['Rides'] = dfJockeys['Rides'].astype(int)
+        #print(dfOtherJockeys)
 
-    #later, merge race entry(jockeys) with jockey selections
-    #JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
-    #print(JockeySelections)
-    dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
-    
-    OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
-    OtherOdds = dfOtherNumber[sType+'CurrentOdds'].loc[dfOtherNumber.index[0]]
-    #print(OtherNumber)
-    #print(OtherOdds)
+        OtherJockeySelections = dfOtherJockeys.copy(deep=True)
+        OtherJockeySelections.drop([sType+'Rides'], axis=1, inplace=True)
+        #print("OtherJockeySelections")
+        #print(OtherJockeySelections)
+        OtherJockeySelections.to_csv(path_to_directory + 'Other' + Jword +'Selections' + '.csv', index=False)
 
-    #let's also concat the Other Jockey Selections 
-    # so that we can map all the other jockeys by their names to other number properly.
-    OtherJockeySelections = pd.read_csv(path_to_directory + 'Other' + Jword + 'Selections' + '.csv')
-    OtherJockeySelections[sType+'OtherNumber'] = OtherNumber
-    AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
+        #later, merge race entry(jockeys) with jockey selections
+        #JockeySelections = pd.read_csv(path_to_directory + 'JockeySelections' + '.csv')
+        #print(JockeySelections)
+        dfOtherNumber = JockeySelections[JockeySelections[sType+'Name'] == 'Others']
+        
+        OtherNumber = dfOtherNumber[sType+'OtherNumber'].loc[dfOtherNumber.index[0]]
+        OtherOdds = dfOtherNumber[sType+'CurrentOdds'].loc[dfOtherNumber.index[0]]
+        #print(OtherNumber)
+        #print(OtherOdds)
+
+    if OtherNumber == 0:
+        AllJockeySelections = JockeySelections.copy(deep=True)
+        AllJockeySelections[sType+'OtherNumber'] = OtherNumber
+    else:
+        #let's also concat the Other Jockey Selections 
+        # so that we can map all the other jockeys by their names to other number properly.
+        OtherJockeySelections = pd.read_csv(path_to_directory + 'Other' + Jword + 'Selections' + '.csv')
+        OtherJockeySelections[sType+'OtherNumber'] = OtherNumber
+        AllJockeySelections = pd.concat([JockeySelections,OtherJockeySelections], axis=0)
+        
     #fill in the current Odds for other jockeys with the correct odds for others.
     AllJockeySelections[sType+'CurrentOdds'].fillna(OtherOdds,inplace=True)
+
     #"LSE" is "out" mathematically impossible to win, let's give that jockey odds of 9999 (which is a number)
     AllJockeySelections[sType+'CurrentOdds'] = AllJockeySelections[sType+'CurrentOdds'].replace(to_replace='LSE',value='9999')
 

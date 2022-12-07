@@ -37,6 +37,11 @@ for sType in ['tnc','jkc']:
         #map of Jockeys to Jockey selection numbers.
         path_to_file = path_to_directory + 'Sim' + sThing + 'Challenge' + '.csv'
         SimJockeyChallenge = pd.read_csv(path_to_file)
+        print(SimJockeyChallenge)
+        #drop selection that doesn't have a valid jkcNumber (like Other when there are not Others)
+        SimJockeyChallenge.fillna(value=0)
+        SimJockeyChallenge = SimJockeyChallenge[ SimJockeyChallenge[sType+'Number'] > 0 ]
+        print(SimJockeyChallenge)
         PrettyJKC = SimJockeyChallenge.copy(deep=True)
 
         #format smaller numbers first 
@@ -58,6 +63,10 @@ for sType in ['tnc','jkc']:
         #order jockeys by expected points.
         PrettyJKC.sort_values(by=['Expected Points','Estimated Odds','Current Odds'],ascending=False,inplace=True)
 
+        #check to see if there are zero previous points (usually when first race == 1)
+        AllTotals = PrettyJKC.sum(axis=0)
+        isFirstRace = AllTotals['Jockey Points'] == 0.0
+        print(isFirstRace) 
 
 
         ##########################################################################################
@@ -80,12 +89,12 @@ for sType in ['tnc','jkc']:
                     label = 'Expected Points', color = 'b', edgecolor='w', ax=axes[0], orient='h')
 
         #next barplot is draw on top of bar plot above ^^^ (green on top of blue)
-        if firstRace > 1:
+        if not isFirstRace:
             sns.barplot(x = sThing+' Points', y = sThing, data = PrettyJKC, 
                     label = 'Current Points', color = 'g', edgecolor = 'w', ax=axes[0], orient='h')
                         
 
-        if firstRace > 1:                
+        if not isFirstRace:                
             axes[0].legend(ncol = 2, loc = 'best') #'lower right')
             axes[0].bar_label(axes[0].containers[0], padding = 5) #expected points
             axes[0].bar_label(axes[0].containers[1], padding = 5, label_type='center') #current points
@@ -184,7 +193,7 @@ for sType in ['tnc','jkc']:
    
 
         #remove low probability jockeys.  Keep jockeys greater than minPct chance.
-        minPct = 2.4
+        minPct = 2.6
         PieJKC = PieJKC[ PieJKC['Chance'] > minPct]
         #print(PieJKC)
         

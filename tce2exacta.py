@@ -86,7 +86,7 @@ for iRace in range(firstRace,lastRace+1) :
     
     #now let's create a Exacta quinella chance, then we'll merge in the 
     # quinella chance and then create a quinella factor so that our tierce chances
-    # take up the same space as the quinella grid... the most liquid (and probably predictive)
+    # take up the same space as the quinella grid... the most liquid (and probably most predictive)
     # HK betting market.
         
     #read fct chance, swap x and y and merge and then add Exy + Eyx to get the exacta

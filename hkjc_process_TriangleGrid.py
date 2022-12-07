@@ -1,5 +1,5 @@
 
-from operator import le
+
 import pandas as pd
 import os
 

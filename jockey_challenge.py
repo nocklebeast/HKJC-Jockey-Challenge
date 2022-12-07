@@ -3,8 +3,7 @@
 ##################################################
 #run after getting the tierce investments.  
 
-from lib2to3.pgen2.literals import simple_escapes
-from tokenize import Single
+
 import string
 import pandas as pd
 import numpy as np
@@ -12,7 +11,7 @@ import os
 
 pd.set_option('display.max_rows',None)
 
-random_seed = 10
+random_seed = 1
 
 
 cwd = os.getcwd()
@@ -40,7 +39,11 @@ JockeyTierceChance = pd.DataFrame()
 
 #construct jockey challenge matrix based on all races for the day.
 #let's process races within the range set by first and last race.
-for iRace in range(firstRace,lastRace+1) :
+lRaces = [*range(firstRace,lastRace+1)]
+
+#for special events like the HKIR... just hack the actual races by hand
+#lRaces = [4,5,7,8]
+for iRace in lRaces:
     sRace = str(iRace)
     #print(sRace)
 

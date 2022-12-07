@@ -64,15 +64,23 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 #get ALL jockey selections to get names and points of all the other jockeys.
 JockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
 print(JockeySelections)
-dfOtherNumberJockey = JockeySelections[JockeySelections[jType+'Name'] == 'Others']
-OtherNumberJockey = dfOtherNumberJockey[jType+'OtherNumber'].loc[dfOtherNumberJockey.index[0]]
+if JockeySelections[jType+'OtherNumber'][0] == 0:
+    OtherNumberJockey = 0
+else:
+    dfOtherNumberJockey = JockeySelections[JockeySelections[jType+'Name'] == 'Others']
+    OtherNumberJockey = dfOtherNumberJockey[jType+'OtherNumber'].loc[dfOtherNumberJockey.index[0]]
 print(OtherNumberJockey)
 
-
-TrainerSelections = pd.read_csv(path_to_directory + 'AllTrainerSelections' + '.csv')
-print(TrainerSelections)
-dfOtherNumberTrainer = TrainerSelections[TrainerSelections[tType+'Name'] == 'Others']
-OtherNumberTrainer = dfOtherNumberTrainer[tType+'OtherNumber'].loc[dfOtherNumberTrainer.index[0]]
+#sometimes no trainer challenge
+try:
+    TrainerSelections = pd.read_csv(path_to_directory + 'AllTrainerSelections' + '.csv')
+    print(TrainerSelections)
+    dfOtherNumberTrainer = TrainerSelections[TrainerSelections[tType+'Name'] == 'Others']
+    OtherNumberTrainer = dfOtherNumberTrainer[tType+'OtherNumber'].loc[dfOtherNumberTrainer.index[0]]
+    isTrainerExist = True
+except :
+    OtherNumberTrainer = 0
+    isTrainerExist = False
 print(OtherNumberTrainer)
 
 for iRace in range(firstRace,lastRace+1) :
@@ -181,18 +189,21 @@ for iRace in range(firstRace,lastRace+1) :
     RaceEntryA.drop([jType+'OtherNumber'], axis=1, inplace=True)
     print(RaceEntryA) 
 
-    #merge in trainer selections
-    #be sure to not throw away "other trainers"
-    #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
-    print(TrainerSelections)
-    RaceEntry = RaceEntryA.merge(TrainerSelections, on=tType+'Name', how='left')
-    print(RaceEntry)
+    if isTrainerExist :
+        #merge in trainer selections
+        #be sure to not throw away "other trainers"
+        #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
+        print(TrainerSelections)
+        RaceEntry = RaceEntryA.merge(TrainerSelections, on=tType+'Name', how='left')
+        print(RaceEntry)
 
-    RaceEntry[tType+'Number'].fillna(OtherNumberJockey,inplace=True)
-    #deal with "other"
-    RaceEntry[tType+'Number'] = RaceEntry[tType+'Number'].astype(int)
-    RaceEntry.drop([tType+'OtherNumber'], axis=1, inplace=True)
-    print(RaceEntry) 
+        RaceEntry[tType+'Number'].fillna(OtherNumberJockey,inplace=True)
+        #deal with "other"
+        RaceEntry[tType+'Number'] = RaceEntry[tType+'Number'].astype(int)
+        RaceEntry.drop([tType+'OtherNumber'], axis=1, inplace=True)
+        print(RaceEntry) 
+    else:
+        RaceEntry= RaceEntryA.copy(deep=True)
 
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
@@ -218,10 +229,15 @@ for iRace in range(firstRace,lastRace+1) :
     xyzRace = xyzRace[xyzRace.horseno_y != xyzRace.horseno]
 
     xyzRace.rename(columns={'horseno':'horseno_z', jType+'Number':jType+'Number_z' }, inplace=True)
-    xyzRace.rename(columns={tType+'Number':tType+'Number_z' }, inplace=True)
-    xyzRace = xyzRace.reindex(columns=['horseno_x','horseno_y','horseno_z', \
+    if isTrainerExist:
+        xyzRace.rename(columns={tType+'Number':tType+'Number_z' }, inplace=True)
+        reindexColumns = ['horseno_x','horseno_y','horseno_z', \
                                         jType+'Number_x', jType+'Number_y', jType+'Number_z' , \
-                                        tType+'Number_x', tType+'Number_y', tType+'Number_z'  ])
+                                        tType+'Number_x', tType+'Number_y', tType+'Number_z'  ]
+    else:
+        reindexColumns = ['horseno_x','horseno_y','horseno_z', \
+                                        jType+'Number_x', jType+'Number_y', jType+'Number_z'  ]
+    xyzRace = xyzRace.reindex(columns=reindexColumns)
 
     xyzRace.sort_values(by=['horseno_x','horseno_y','horseno_z'], inplace=True)
 
