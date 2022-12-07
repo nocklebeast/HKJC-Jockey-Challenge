@@ -23,6 +23,8 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 
+from hkjc_functions import read_race_parameters
+
 #race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=winplaodds&date=2022-05-01&venue=ST&start=8&end=8'
 
 
@@ -32,17 +34,10 @@ path_to_directory = cwd + '\\odds_files\\'
 path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
 
-sDate = RaceParameters.at[0,'sDate']
-sRace = RaceParameters.at[0,'sRace']
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_file)
 
 print(sDate)
-print(sRace)
 print(firstRace)
 print(lastRace)
 print(sVenue)
@@ -53,7 +48,7 @@ print(sVenue)
 base_url = 'https://bet.hkjc.com/racing/getJSON.aspx' 
 
 
-lDataType = ['jkc','tnc'] #jockey/trainer.
+lDataType = [jType] #jockey/trainer.  Let's only do either jockey OR trainer not both at once.
 
 for sType in lDataType:
     #deal with race > 1 and tnc.

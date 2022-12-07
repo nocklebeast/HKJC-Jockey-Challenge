@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
+from hkjc_functions import read_race_parameters
 
 pd.set_option('display.max_rows',None)
 
@@ -13,7 +14,9 @@ print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
 path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
-for sType in ['jkc','tnc']:
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
+
+for sType in [jType]:
     if sType == 'jkc':
         #jword = 'jockey'
         Jword = 'Jockey'

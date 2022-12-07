@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import shutil
+from hkjc_functions import read_race_parameters
 
 pd.set_option('display.max_rows',None)
 
@@ -21,15 +22,7 @@ format = 'zip'
 shutil.make_archive(zipped_filename_with_path_no_extenstion, format, path_to_raw)
 #shutil.unpack_archive(filename [, extract_dir [, format]])
 
-path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
-
-sDate = RaceParameters.at[0,'sDate']
-sRace = str(RaceParameters.at[0,'sRace'])
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
 
 sType = 'tceinv'
 
@@ -241,9 +234,9 @@ for iRace in range(firstRace,lastRace+1) :
 
     xJockey = JockeySelectionsRace.copy(deep=True)
     xJockey.rename(columns={'horseno':'horseno_x','jkcNumber':'jkcNo_x'}, inplace=True)
-    xJockey.rename(columns={'tncNumber':'tncNo_x'}, inplace=True)
+    #xJockey.rename(columns={'tncNumber':'tncNo_x'}, inplace=True)
     xJockey.rename(columns={'jkcName':'jkcNx'}, inplace=True)
-    xJockey.rename(columns={'tncName':'tncNx'}, inplace=True)
+    #xJockey.rename(columns={'tncName':'tncNx'}, inplace=True)
     #xJockey.rename(columns={'JockeyPoints':'xPreviousPoints'}, inplace=True)
     #xJockey.drop(columns='jkcName',inplace=True)
     #print(xJockey)
@@ -252,9 +245,9 @@ for iRace in range(firstRace,lastRace+1) :
 
     yJockey = JockeySelectionsRace.copy(deep=True)
     yJockey.rename(columns={'horseno':'horseno_y','jkcNumber':'jkcNo_y'}, inplace=True)
-    yJockey.rename(columns={'tncNumber':'tncNo_y'}, inplace=True)
+    #yJockey.rename(columns={'tncNumber':'tncNo_y'}, inplace=True)
     yJockey.rename(columns={'jkcName':'jkcNy'}, inplace=True)
-    yJockey.rename(columns={'tncName':'tncNy'}, inplace=True)
+    #yJockey.rename(columns={'tncName':'tncNy'}, inplace=True)
     #yJockey.rename(columns={'JockeyPoints':'yPreviousPoints'}, inplace=True)
     #yJockey.drop(columns='jkcName',inplace=True)
     #print(yJockey)
@@ -263,9 +256,9 @@ for iRace in range(firstRace,lastRace+1) :
     
     zJockey = JockeySelectionsRace.copy(deep=True)
     zJockey.rename(columns={'horseno':'horseno_z','jkcNumber':'jkcNo_z'}, inplace=True)
-    zJockey.rename(columns={'tncNumber':'tncNo_z'}, inplace=True)
+    #zJockey.rename(columns={'tncNumber':'tncNo_z'}, inplace=True)
     zJockey.rename(columns={'jkcName':'jkcNz'}, inplace=True)
-    zJockey.rename(columns={'tncName':'tncNz'}, inplace=True)
+    #zJockey.rename(columns={'tncName':'tncNz'}, inplace=True)
     #Jockey.rename(columns={'JockeyPoints':'zPreviousPoints'}, inplace=True)
     #zJockey.drop(columns='jkcName',inplace=True)
     #print(zJockey)
@@ -273,8 +266,8 @@ for iRace in range(firstRace,lastRace+1) :
 
     JockeyTierce = JockeyTierce.reindex(columns=['Race','horseno_x','horseno_y', 'horseno_z', \
                                         'jkcNo_x','jkcNo_y', 'jkcNo_z', 'jkcNx','jkcNy', 'jkcNz', \
-                                        'tncNo_x','tncNo_y', 'tncNo_z', 'tncNx','tncNy', 'tncNz', \
                                         'TierceCh'])
+    #                                        'tncNo_x','tncNo_y', 'tncNo_z', 'tncNx','tncNy', 'tncNz', \
 
     JockeyTierce.rename(columns={'horseno_x':'Hx',  \
                                 'horseno_y':'Hy',  \

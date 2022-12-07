@@ -16,6 +16,8 @@ import json
 import os
 import shutil
 
+from hkjc_functions import read_race_parameters
+
 #from multiprocessing import Process
 
 import requests
@@ -103,28 +105,16 @@ except OSError as error:
     print(error)
 
 
-
-
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
-
 #copy race_parameters into raw odds
 shutil.copyfile(path_to_directory + 'race_parameters.txt', path_to_raw + 'race_parameters.txt')
 
-sDate = RaceParameters.at[0,'sDate']
-#sRace = RaceParameters.at[0,'sRace']
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
 
-print(sDate)
-print(firstRace)
-print(lastRace)
-print(sVenue)
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_file)
 
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
+    print(sRace)
     #lBetTypes=[ 'tceinv', 'tcetop', 'tcebank', 'tri']
     #lBetTypes=[ 'tceinv', 'fct', 'qin']
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']

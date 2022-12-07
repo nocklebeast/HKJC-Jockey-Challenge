@@ -25,29 +25,18 @@ from selenium.webdriver.firefox.options import Options
 #from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
+from hkjc_functions import read_race_parameters
+
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
 path_to_raw = path_to_directory + '\\odds_raw\\'
 
-path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
 
-sDate = RaceParameters.at[0,'sDate']
-sRace = RaceParameters.at[0,'sRace']
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+#jType = 'jkc'
+#tType = 'tnc'
 
-print(sDate)
-print(sRace)
-print(firstRace)
-print(lastRace)
-print(sVenue)
-
-jType = 'jkc'
-tType = 'tnc'
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
 
 #https://bet.hkjc.com/racing/pages/odds_wp.aspx?lang=en&date=2022-05-15&venue=ST&raceno=1
 
@@ -71,6 +60,7 @@ else:
     OtherNumberJockey = dfOtherNumberJockey[jType+'OtherNumber'].loc[dfOtherNumberJockey.index[0]]
 print(OtherNumberJockey)
 
+"""
 #sometimes no trainer challenge
 try:
     TrainerSelections = pd.read_csv(path_to_directory + 'AllTrainerSelections' + '.csv')
@@ -82,6 +72,7 @@ except :
     OtherNumberTrainer = 0
     isTrainerExist = False
 print(OtherNumberTrainer)
+"""
 
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
@@ -119,10 +110,8 @@ for iRace in range(firstRace,lastRace+1) :
     jPos = txtPage.find("{",iPos+1)
     iPos = jPos
 
-    #jPos = txtPage.find(";",iPos+1)
     jPos = txtPage.find("}]",iPos+1)
-    #print(iPos)
-    #print(jPos)
+
 
     #everything between (and including) { } for ALL the horses
     #sRunnerList = txtPage[iPos : jPos+1]
@@ -167,11 +156,13 @@ for iRace in range(firstRace,lastRace+1) :
 
     dfRaceEntry = pd.DataFrame()
     dfRaceEntry['horseno'] = dfH2[1]
-    dfRaceEntry[jType+'Name'] = dfJ2[1]
     dfRaceEntry['Race'] = iRace
-    dfRaceEntry[tType+'Name'] = dfT2[1]
+    if jType == 'jkc':
+        dfRaceEntry[jType+'Name'] = dfJ2[1]
+    else:
+        dfRaceEntry[jType+'Name'] = dfT2[1]
 
-    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', jType+'Name',tType+'Name'] )
+    dfRaceEntry = dfRaceEntry.reindex(columns=[ 'Race', 'horseno', jType+'Name'] )
     dfRaceEntry['horseno'] = dfRaceEntry['horseno'].astype(int)
     print(dfRaceEntry)
 
@@ -189,6 +180,7 @@ for iRace in range(firstRace,lastRace+1) :
     RaceEntryA.drop([jType+'OtherNumber'], axis=1, inplace=True)
     print(RaceEntryA) 
 
+    """  let's have jockey only for now.
     if isTrainerExist :
         #merge in trainer selections
         #be sure to not throw away "other trainers"
@@ -204,7 +196,8 @@ for iRace in range(firstRace,lastRace+1) :
         print(RaceEntry) 
     else:
         RaceEntry= RaceEntryA.copy(deep=True)
-
+    """
+    RaceEntry= RaceEntryA.copy(deep=True)
     RaceEntry.to_csv(path_to_directory + 'RaceEntry' + sRace + '.csv', index=False)
 
     #don't need the jockey names for jockey challenge, let's drop them. (just needed for merging selections and horseno)
@@ -218,8 +211,8 @@ for iRace in range(firstRace,lastRace+1) :
     xyRace.rename({'Race':'Race_x'}, axis=1)
 
     xyRace = xyRace.reindex(columns=['horseno_x','horseno_y', \
-                            jType+'Number_x', jType+'Number_y', \
-                            tType+'Number_x', tType+'Number_y' ] )
+                            jType+'Number_x', jType+'Number_y' ] )
+                            #tType+'Number_x', tType+'Number_y' ] )
     xyRace.sort_values(by=['horseno_x','horseno_y'], inplace=True)
     #print(xyRace.head())
 
@@ -229,13 +222,15 @@ for iRace in range(firstRace,lastRace+1) :
     xyzRace = xyzRace[xyzRace.horseno_y != xyzRace.horseno]
 
     xyzRace.rename(columns={'horseno':'horseno_z', jType+'Number':jType+'Number_z' }, inplace=True)
+    """
     if isTrainerExist:
         xyzRace.rename(columns={tType+'Number':tType+'Number_z' }, inplace=True)
         reindexColumns = ['horseno_x','horseno_y','horseno_z', \
                                         jType+'Number_x', jType+'Number_y', jType+'Number_z' , \
                                         tType+'Number_x', tType+'Number_y', tType+'Number_z'  ]
     else:
-        reindexColumns = ['horseno_x','horseno_y','horseno_z', \
+    """
+    reindexColumns = ['horseno_x','horseno_y','horseno_z', \
                                         jType+'Number_x', jType+'Number_y', jType+'Number_z'  ]
     xyzRace = xyzRace.reindex(columns=reindexColumns)
 

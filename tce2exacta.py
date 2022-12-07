@@ -5,25 +5,24 @@ import pandas as pd
 import numpy as np
 import os
 from matplotlib import pyplot as plt
+from hkjc_functions import read_race_parameters
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
 
-sDate = RaceParameters.at[0,'sDate']
-sRace = str(RaceParameters.at[0,'sRace'])
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
 
-sType = 'jkc'
-sThing = 'Jockey'
-tType = 'tnc'
-#jockey-tierce has the trainer info in it (from hkjc_process_tierce_investments)
+if jType == 'jkc':
+    sThing = 'Jockey'
+else:
+    sThing = "Trainer"
+sType = jType
+
+#jockey-tierce had the trainer info in it (from hkjc_process_tierce_investments)
 """
 if sType == 'jkc':
     sThing = 'Jockey'
@@ -44,9 +43,9 @@ for iRace in range(firstRace,lastRace+1) :
     #drop a bunch of extra columns
     #TierceChance.drop(['Jx','Jy', 'Jz','JNx','JNy','JNz'], axis=1, inplace=True)
     TierceChance.drop([sType+'No_x', sType+'No_y',sType+'No_z'], axis=1, inplace=True)
-    TierceChance.drop([tType+'No_x', tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+    #TierceChance.drop([tType+'No_x', tType+'No_y',tType+'No_z'], axis=1, inplace=True)
     TierceChance.drop([sType+'Nx', sType+'Ny',sType+'Nz'], axis=1, inplace=True)
-    TierceChance.drop([tType+'Nx', tType+'Ny',tType+'Nz'], axis=1, inplace=True)
+    #TierceChance.drop([tType+'Nx', tType+'Ny',tType+'Nz'], axis=1, inplace=True)
     TierceChance.sort_values(['Race','Hx','Hy','Hz'],inplace=True)
     #print(TierceChance.head(15))
     #collapse and sum on race, x, y horse numbers.

@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns 
 import os
+from hkjc_functions import read_race_parameters
 
 pd.set_option('display.max_rows',None)
 
@@ -12,18 +13,13 @@ cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
 
-path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
+path_to_directory = cwd + '\\odds_files\\'
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
-sDate = RaceParameters.at[0,'sDate']
-sRace = str(RaceParameters.at[0,'sRace'])
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
 
 
-for sType in ['tnc','jkc']:
+for sType in [jType]:
     if sType == 'jkc':
         sThing = "Jockey"
     else:
@@ -170,7 +166,7 @@ for sType in ['tnc','jkc']:
         if sVenue == "ST": 
             sFullVenue = "Sha Tin"
         else: sFullVenue = "Happy Valley"
-        sOverallTitle = sOverallTitle + sThing+" Challenge" + "\n" + "(before the start of race " + sRace + " on " + sDate + " at " + sFullVenue + ")"
+        sOverallTitle = sOverallTitle + sThing+" Challenge" + "\n" + "(before the start of race " + str(firstRace) + " on " + sDate + " at " + sFullVenue + ")"
         plt.suptitle(sOverallTitle) #, fontweight='medium')
 
         #let's see all the Jockeys and labels on vertical axis.
@@ -190,25 +186,27 @@ for sType in ['tnc','jkc']:
 
         PieJKC = PrettyJKC.copy(deep=True)
         print(PieJKC)
-   
+        print(PieJKC.shape)
 
-        #remove low probability jockeys.  Keep jockeys greater than minPct chance.
-        minPct = 2.6
-        PieJKC = PieJKC[ PieJKC['Chance'] > minPct]
-        #print(PieJKC)
-        
-        #replace last probablities with "The Rest"
-        AllTotals = PieJKC.sum(axis=0)
-        #print(AllTotals)
-        #JockeyNumber  jockeyName  CurrentOdds  JockeyPoints  ExpectedPoints  Chance   Pay
-        #need to add a new row for "The Rest".
-        TheRest = [99, 'The Rest', 999, 0, 0, 100-AllTotals['Chance'], 999]  
-        #convert that list to a dictionary and then a dataframe and concat the two dataframes to append the row.
-        dctTheRest = dict(zip(PieJKC.columns, TheRest))
-        dfTheRest = pd.DataFrame(dctTheRest, index=[0])
-        #print(dfTheRest)
+        #remove low probability jockeys, if more than 12 jockeys (for readability of lowest probabilities.)  
+        #Keep jockeys greater than minPct chance.
+        if PieJKC.shape[0] + 1 > 12:
+            minPct = 2.6
+            PieJKC = PieJKC[ PieJKC['Chance'] > minPct]
+  
+            #replace last probablities with "The Rest"
+            AllTotals = PieJKC.sum(axis=0)
+            #print(AllTotals)
+            #JockeyNumber  jockeyName  CurrentOdds  JockeyPoints  ExpectedPoints  Chance   Pay
+            #need to add a new row for "The Rest".
+            TheRest = [99, 'The Rest', 999, 0, 0, 100-AllTotals['Chance'], 999]  
+            #convert that list to a dictionary and then a dataframe and concat the two dataframes to append the row.
+            dctTheRest = dict(zip(PieJKC.columns, TheRest))
+            dfTheRest = pd.DataFrame(dctTheRest, index=[0])
+            #print(dfTheRest)
 
-        PieJKC = pd.concat([PieJKC, dfTheRest], axis=0)
+            PieJKC = pd.concat([PieJKC, dfTheRest], axis=0)
+            
         print(PieJKC)
 
         plt.pie(PieJKC["Chance"], 
@@ -222,7 +220,7 @@ for sType in ['tnc','jkc']:
             sFullVenue = "Sha Tin"
         else: sFullVenue = "Happy Valley"
 
-        sSubTitle = "before the start of race " + sRace + " on " + sDate + " at " + sFullVenue
+        sSubTitle = "before the start of race " + str(firstRace) + " on " + sDate + " at " + sFullVenue
         plt.title(sSubTitle)
 
         plt.tight_layout()

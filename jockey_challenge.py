@@ -8,6 +8,7 @@ import string
 import pandas as pd
 import numpy as np
 import os 
+from hkjc_functions import read_race_parameters
 
 pd.set_option('display.max_rows',None)
 
@@ -17,22 +18,14 @@ random_seed = 1
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
-print(path_to_directory)
+path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
-path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
 
-sDate = RaceParameters.at[0,'sDate']
-sRace = str(RaceParameters.at[0,'sRace'])
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
-
-jType = 'jkc'
-tType = 'tnc'
-jThing = 'Jockey'
-tThing = 'Trainer'
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
+if jType == 'jkc':
+    sThing = 'Jockey'
+else:
+    sThing = 'Trainer'
 
 #JockeyTierce for all races of the day.... concat all the JockeyTierces for individual races.
 JockeyTierceChance = pd.DataFrame()
@@ -42,7 +35,7 @@ JockeyTierceChance = pd.DataFrame()
 lRaces = [*range(firstRace,lastRace+1)]
 
 #for special events like the HKIR... just hack the actual races by hand
-#lRaces = [4,5,7,8]
+lRaces = [4,5,7,8]
 for iRace in lRaces:
     sRace = str(iRace)
     #print(sRace)
@@ -53,16 +46,16 @@ for iRace in lRaces:
     JockeyTierceChance = pd.concat([JockeyTierceChance, tempJockeyTierce], ignore_index=True )
     #print(JockeyTierceChance.head())
 #end iRace
-JockeyTierceChance.to_csv(path_to_directory + jThing + 'TierceChance' + '.csv', index=False)
+JockeyTierceChance.to_csv(path_to_directory + sThing + 'TierceChance' + '.csv', index=False)
 
 #monte carlo simulate for jockeys (jkc) and trainers (tnc).
-for sType in ['tnc','jkc']:
-    if sType == jType:
-        sThing = jThing
+for sType in [jType]:
+    if sType == 'jkc':
+        sThing = 'Jockey'
     else:
-        sThing = tThing
+        sThing = 'Trainer'
 
-    if firstRace > 1 and sType == tType:
+    if firstRace > 1 and sType == 'tnc':
         print("Trainer challenge is only available before the start of the first race of the day.")
         print("")
     else:
@@ -144,12 +137,12 @@ for sType in ['tnc','jkc']:
             Points1['Points1'] = 12 * Points['bWinner']
 
             Points1.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
-            Points1.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+            #Points1.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
             Points1.drop([jType+'Ny',jType+'Nz'], axis=1, inplace=True)
-            Points1.drop([tType+'Ny',tType+'Nz'], axis=1, inplace=True)
+            #Points1.drop([tType+'Ny',tType+'Nz'], axis=1, inplace=True)
             # group on name not number
             Points1.rename(columns = {jType+'Nx':jType+'Name'}, inplace=True)
-            Points1.rename(columns = {tType+'Nx':tType+'Name'}, inplace=True)
+            #Points1.rename(columns = {tType+'Nx':tType+'Name'}, inplace=True)
             #group by sum on the jockey/trainer depending on the challenge (sType)
             RaceDayPoints1 = Points1.groupby([sType+'Name']).sum().reset_index()
             RaceDayPoints1.rename(columns = {'bWinner':'nWins'}, inplace=True)
@@ -158,11 +151,11 @@ for sType in ['tnc','jkc']:
             Points2 = Points.copy(deep=True)
             Points2['Points2'] = 6 * Points['bWinner']
             Points2.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
-            Points2.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+            #Points2.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
             Points2.drop([jType+'Nx',jType+'Nz'], axis=1, inplace=True)
-            Points2.drop([tType+'Nx',tType+'Nz'], axis=1, inplace=True)
+            #Points2.drop([tType+'Nx',tType+'Nz'], axis=1, inplace=True)
             Points2.rename(columns = {jType+'Ny':jType+'Name'}, inplace=True)
-            Points2.rename(columns = {tType+'Ny':tType+'Name'}, inplace=True)
+            #Points2.rename(columns = {tType+'Ny':tType+'Name'}, inplace=True)
             RaceDayPoints2 = Points2.groupby([sType+'Name']).sum().reset_index()
             RaceDayPoints2.rename(columns = {'bWinner':'nPlaces'}, inplace=True)
             #print(RaceDayPoints2)
@@ -170,11 +163,11 @@ for sType in ['tnc','jkc']:
             Points3 = Points.copy(deep=True)
             Points3['Points3'] = 4 * Points['bWinner']
             Points3.drop([jType+'No_x',jType+'No_y',jType+'No_z'], axis=1, inplace=True)
-            Points3.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
+            #Points3.drop([tType+'No_x',tType+'No_y',tType+'No_z'], axis=1, inplace=True)
             Points3.drop([jType+'Nx',jType+'Ny'], axis=1, inplace=True)
-            Points3.drop([tType+'Nx',tType+'Ny'], axis=1, inplace=True)
+            #Points3.drop([tType+'Nx',tType+'Ny'], axis=1, inplace=True)
             Points3.rename(columns = {jType+'Nz':jType+'Name'}, inplace=True)
-            Points3.rename(columns = {tType+'Nz':tType+'Name'}, inplace=True)
+            #Points3.rename(columns = {tType+'Nz':tType+'Name'}, inplace=True)
             #print(Points3.tail())
             RaceDayPoints3 = Points3.groupby([sType+'Name']).sum().reset_index()
             RaceDayPoints3.rename(columns = {'bWinner':'nShows'}, inplace=True)

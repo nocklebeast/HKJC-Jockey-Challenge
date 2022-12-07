@@ -2,6 +2,7 @@
 
 import pandas as pd
 import os
+from hkjc_functions import read_race_parameters
 
 pd.set_option('display.max_rows',None)
 
@@ -10,15 +11,7 @@ print("My current directory is : " + cwd)
 path_to_directory = cwd + '\\odds_files\\'
 path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
-path_to_file = path_to_directory + 'race_parameters' + '.txt'
-RaceParameters = pd.read_csv(path_to_file)  
-print(RaceParameters)
-
-sDate = RaceParameters.at[0,'sDate']
-sRace = str(RaceParameters.at[0,'sRace'])
-firstRace = int(RaceParameters.at[0,'firstRace'])
-lastRace = int(RaceParameters.at[0,'lastRace'])
-sVenue = RaceParameters.at[0,'sVenue']
+firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
 
 lBetTypes=['qin', 'qpl']
 #lBetTypes=['qin']  #just quinella.
