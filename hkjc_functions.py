@@ -22,3 +22,13 @@ def read_race_parameters(path_to_file: str) :
     print(jType)
     """
     return firstRace, lastRace, sDate, sVenue, jType
+
+
+def renormalize_column(df: pd.DataFrame, sColumn: str, newColumn=''):
+    AllTotals = df.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
+    if len(newColumn) > 0:
+        df[newColumn] = df[sColumn] / AllTotals[sColumn]
+    else:
+        df[sColumn] = df[sColumn] / AllTotals[sColumn]
+    #print(df.head())
+    

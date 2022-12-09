@@ -3,12 +3,12 @@ import pandas as pd
 import numpy as np
 import os
 import shutil
-from hkjc_functions import read_race_parameters
+from hkjc_functions import read_race_parameters, renormalize_column
 
 pd.set_option('display.max_rows',None)
 
 cTakeout = 0.25
-np.random.seed(10)
+np.random.seed(1)
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
@@ -79,13 +79,11 @@ for iRace in range(firstRace,lastRace+1) :
     TierceInvestments = TierceInvestments[TierceInvestments['TINV2'] > 0]
     TierceInvestments = TierceInvestments[TierceInvestments['TINV2'] > 0]
 
-    #compute chances
-    AllTotals = TierceInvestments.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-    print(AllTotals)
 
-    TierceInvestments['T1Ch'] = TierceInvestments['TINV1'] / AllTotals['TINV1']
-    TierceInvestments['T2Ch'] = TierceInvestments['TINV2'] / AllTotals['TINV2']
-    TierceInvestments['T3Ch'] = TierceInvestments['TINV3'] / AllTotals['TINV3']
+    #compute chances
+    renormalize_column(TierceInvestments, 'TINV1', 'T1Ch')
+    renormalize_column(TierceInvestments, 'TINV2', 'T2Ch')
+    renormalize_column(TierceInvestments, 'TINV3', 'T3Ch')
     TierceInvestments['Race'] = iRace
 
     TierceInvestments.to_csv(path_to_directory + 'TierceInvestments' + sRace + '.csv', index=False)
@@ -164,10 +162,10 @@ for iRace in range(firstRace,lastRace+1) :
                                 * xyzTierce.T2Ch_y \
                                 * xyzTierce.T3Ch_z  
     #check normalization of Tiercechance
-    AllTotals = xyzTierce.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-    print(AllTotals)
-    #renormalize alt tierce chance
-    xyzTierce['TierceChanceX'] = xyzTierce['TierceChanceX'] / AllTotals['TierceChanceX']
+    renormalize_column(xyzTierce, 'TierceChanceX')
+    #AllTotals = xyzTierce.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
+    #print(AllTotals)
+
 
     xyzTierce['Pay'] = (1-cTakeout) / xyzTierce['TierceChance']
     xyzTierce['Pay'] = xyzTierce['Pay'].apply(lambda x: round(x, 1))
@@ -234,34 +232,19 @@ for iRace in range(firstRace,lastRace+1) :
 
     xJockey = JockeySelectionsRace.copy(deep=True)
     xJockey.rename(columns={'horseno':'horseno_x','jkcNumber':'jkcNo_x'}, inplace=True)
-    #xJockey.rename(columns={'tncNumber':'tncNo_x'}, inplace=True)
     xJockey.rename(columns={'jkcName':'jkcNx'}, inplace=True)
-    #xJockey.rename(columns={'tncName':'tncNx'}, inplace=True)
-    #xJockey.rename(columns={'JockeyPoints':'xPreviousPoints'}, inplace=True)
-    #xJockey.drop(columns='jkcName',inplace=True)
-    #print(xJockey)
     JockeyTierce = JockeyTierce.merge(xJockey,on=['Race','horseno_x'], how='inner')
     #print(JockeyTierce.head())
 
     yJockey = JockeySelectionsRace.copy(deep=True)
     yJockey.rename(columns={'horseno':'horseno_y','jkcNumber':'jkcNo_y'}, inplace=True)
-    #yJockey.rename(columns={'tncNumber':'tncNo_y'}, inplace=True)
     yJockey.rename(columns={'jkcName':'jkcNy'}, inplace=True)
-    #yJockey.rename(columns={'tncName':'tncNy'}, inplace=True)
-    #yJockey.rename(columns={'JockeyPoints':'yPreviousPoints'}, inplace=True)
-    #yJockey.drop(columns='jkcName',inplace=True)
-    #print(yJockey)
     JockeyTierce = JockeyTierce.merge(yJockey,on=['Race','horseno_y'], how='inner')
-    #print(JockeyTierce.head())
     
     zJockey = JockeySelectionsRace.copy(deep=True)
     zJockey.rename(columns={'horseno':'horseno_z','jkcNumber':'jkcNo_z'}, inplace=True)
-    #zJockey.rename(columns={'tncNumber':'tncNo_z'}, inplace=True)
     zJockey.rename(columns={'jkcName':'jkcNz'}, inplace=True)
-    #zJockey.rename(columns={'tncName':'tncNz'}, inplace=True)
-    #Jockey.rename(columns={'JockeyPoints':'zPreviousPoints'}, inplace=True)
-    #zJockey.drop(columns='jkcName',inplace=True)
-    #print(zJockey)
+
     JockeyTierce = JockeyTierce.merge(zJockey,on=['Race','horseno_z'], how='inner')
 
     JockeyTierce = JockeyTierce.reindex(columns=['Race','horseno_x','horseno_y', 'horseno_z', \

@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 from matplotlib import pyplot as plt
-from hkjc_functions import read_race_parameters
+from hkjc_functions import read_race_parameters, renormalize_column
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
@@ -63,7 +63,7 @@ for iRace in range(firstRace,lastRace+1) :
     ExactaChance = pd.merge(ExTceChance, ExFctChance, on=['Race','horseno_x','horseno_y'], how='inner')
     ExactaChance['ForecastFactor'] = ExactaChance['fctChance'] / ExactaChance['TierceCh']
     #print(ExactaChance.head(15))
-    AllTotals = ExactaChance.sum(axis=0)
+    #AllTotals = ExactaChance.sum(axis=0)
     #print(AllTotals)
 
     ExactaChance.sort_values(['Race','horseno_x','horseno_y']).reset_index

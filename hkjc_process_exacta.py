@@ -1,7 +1,7 @@
 
 import pandas as pd
 import os
-from hkjc_functions import read_race_parameters
+from hkjc_functions import read_race_parameters, renormalize_column
 
 pd.set_option('display.max_rows',None)
 
@@ -70,12 +70,9 @@ for iRace in range(firstRace,lastRace+1) :
     Chance = Pays.copy()
     Chance.drop([sType+'IsSpecial'], axis=1, inplace=True)
     Chance[sType+'Chance'] = 1 / Chance[sType+'pays'] 
+    #print(Chance.head(5))
 
-    print(Chance.head(5))
-
-    AllTotals = Chance.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-    print(AllTotals)
-    Chance[sType+'Chance'] = Chance[sType+'Chance'] / AllTotals[sType+'Chance'] 
+    renormalize_column(Chance, sType+'Chance')
     #check normalization
     #AllTotals = Chance.sum(axis=0) 
     #print(AllTotals)

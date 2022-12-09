@@ -2,7 +2,7 @@
 
 import pandas as pd
 import os
-from hkjc_functions import read_race_parameters
+from hkjc_functions import read_race_parameters, renormalize_column
 
 pd.set_option('display.max_rows',None)
 
@@ -102,18 +102,11 @@ for iRace in range(firstRace,lastRace+1) :
         Chance[sType+'Chance'] = 1 / Chance[sType+'pays'] 
         #print(Chance)
         
-        AllTotals = Chance.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-        #print(AllTotals)
-        Chance[sType+'Chance'] = Chance[sType+'Chance'] / AllTotals[sType+'Chance'] 
-        #print(Chance)
+        renormalize_column(Chance, sType+'Chance')
         #check normalization
-        AllTotals = Chance.sum(axis=0) 
+        #AllTotals = Chance.sum(axis=0) 
         #print(AllTotals)
-        #let's keep pays for now.
-        #Chance.drop([sType+'pays'], axis=1, inplace=True)
-        #print(Chance)
-        AllTotals = Chance.sum(axis=0) 
-
+ 
         Chance.to_csv(path_to_directory + sType+'Chance' + sRace + '.csv', index=False)
 
         #let's make a normalized exacta grid of the triangular (qpl and qin) chances.
@@ -127,15 +120,10 @@ for iRace in range(firstRace,lastRace+1) :
         ExQChance.sort_values(by=['horseno_x','horseno_y'], inplace=True)
         print(ExQChance)
 
-        #renormalize chances.
-
-        AllTotals = ExQChance.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-        print(AllTotals)
-        ExQChance[sType+'Chance'] = ExQChance[sType+'Chance'] / AllTotals[sType+'Chance'] 
-        print(ExQChance)
+        renormalize_column(ExQChance, sType+'Chance')
         #check normalization
-        AllTotals = ExQChance.sum(axis=0) 
-        print(AllTotals)
+        #AllTotals = ExQChance.sum(axis=0) 
+        #print(AllTotals)
 
         ExQChance.to_csv(path_to_directory + 'Ex' + sType + 'Chance' + sRace + '.csv', index=False)
 
@@ -176,11 +164,9 @@ for iRace in range(firstRace,lastRace+1) :
     print(exQinQplChance.head())
 
     #renormalize chances.
+    renormalize_column(exQinQplChance, 'qinChance')
+    renormalize_column(exQinQplChance, 'qplChance')
 
-    AllTotals = exQinQplChance.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
-    print(AllTotals)
-    exQinQplChance['qinChance'] = exQinQplChance['qinChance'] / AllTotals['qinChance'] 
-    exQinQplChance['qplChance'] = exQinQplChance['qplChance'] / AllTotals['qplChance'] 
     print(exQinQplChance.head())
     #check normalization
     AllTotals = exQinQplChance.sum(axis=0) 
