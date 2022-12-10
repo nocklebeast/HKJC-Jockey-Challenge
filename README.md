@@ -1,11 +1,11 @@
 # HKJC-Jockey-Challenge
 Estimating odds for HKJC's Jockey Challenge and the Trainer Challenge
 
-In the HKJC's Jockey Challenge, best performing jockeys are assigned points for each win, place, or show (1st, 2nd, or 3rd place). The jockey with the most points wins the challenge, and the HKJC accepts bets on the outcome in Hong Kong.
+In the HKJC's Jockey Challenge, best performing jockeys are assigned points for each 1st, 2nd, or 3rd place finish for each race of the day. The jockey with the most points at the end of the day wins the challenge. The HKJC accepts bets on the outcome in Hong Kong.
 
-Uses a simple model for predicting trifecta winners for each race of the day, based on public odds on HKJC's website. Then estimates the expected points and odds of winning the jockey challenge using a Monte Carlo simulation.
+Public odds on the HKJC's website are used to estimate the chance of any 3-horse permutation winning each race. Estimates of the expected points jockeys earn and chance of winning the overall jockey challenge are computed using a Monte Carlo simulation. 
 
-The calculation may be peformed before the first race and in between races (just like you can bet during those times as well... if you're in Hong Kong).  The Trainer Challenge is only played before the first race of the day.
+The calculation may be peformed before the first race and in between races (just like you can bet during those times as well... if you're in Hong Kong).
 
 Known issues/room for improvement:
 
