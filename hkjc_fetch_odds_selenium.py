@@ -8,24 +8,13 @@
 #need to install gecko driver (for firefox) for windows.
 # http://www.learningaboutelectronics.com/Articles/How-to-install-geckodriver-Python-windows.php
 
-#from tracemalloc import stop
-#import urllib.request as ul
-from bs4 import BeautifulSoup as soup
-import pandas as pd
-import json
 import os
 import shutil
+import time
 
 from hkjc_functions import read_race_parameters
+from hkjc_functions import fetch_odds
 
-#from multiprocessing import Process
-
-import requests
-import time 
-
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.by import By
 
 #race_day_url = 'https://bet.hkjc.com/racing/getJSON.aspx?type=winplaodds&date=2022-05-01&venue=ST&start=8&end=8'
 
@@ -43,55 +32,7 @@ from selenium.webdriver.common.by import By
 # fct = forecase or exacta
 """
 
-def fetch_odds(RaceNo: int, sDataType: str, sRaceDate: str, sRaceVenue: str,  path_to_write_directory: str) :
-    sRaceNo = str(RaceNo)
-
-    base_url = 'https://bet.hkjc.com/racing/getJSON.aspx' 
-    isTypeStartEnd = (sDataType == 'winplaodds')
-
-    betParams = {'type': sDataType, 'date': sRaceDate, 'venue': sRaceVenue}
-    sParams = 'type=' + sDataType + '&date=' + sRaceDate + '&venue=' + sRaceVenue  
-
-    if not isTypeStartEnd :
-        betParams['raceno'] = sRaceNo
-        sParams = sParams + '&raceno=' + sRaceNo 
-    else :
-        betParams['start'] = sRaceNo
-        betParams['end'] = sRaceNo 
-        sParams = sParams + '&start=' + sRaceNo + '&end=' + sRaceNo 
-
-    race_url = base_url + '?' + sParams
-    print(race_url)
-
-    WebDriverOptions = Options()
-    WebDriverOptions.headless = True
-    
-    browser = webdriver.Firefox(options=WebDriverOptions)
-    browser.get(race_url)
-    time.sleep(4)
-    #print("browser page source")
-    #print(browser.page_source)
-    txtPage = browser.page_source
-    browser.close
-
-    #just really need to get the text between the curly brackets {"OUT":""}
-    #print("soup html.parser")
-    mySoup = soup(txtPage, 'html.parser')
-    #print(mySoup)
-    #print("just the text")
-    #besure to include the (), get something different otherwise.
-    justText = mySoup.get_text()
-    print(justText)
-
-    #write text file of the string for later processing.
-    path_to_file = path_to_write_directory  + '\\' + sDataType + sRaceNo + '.txt'
-
-    with open(path_to_file,'w') as oddsFile:
-        oddsFile.write(justText)
-        oddsFile.close()
-
-    return
-#end def fetch_odds
+#def_fetch_odds
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
@@ -112,6 +53,8 @@ shutil.copyfile(path_to_directory + 'race_parameters.txt', path_to_raw + 'race_p
 
 firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_file)
 
+start_time = time.time()
+
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
     print(sRace)
@@ -119,34 +62,23 @@ for iRace in range(firstRace,lastRace+1) :
     #lBetTypes=[ 'tceinv', 'fct', 'qin']
     #lBetTypes=[ 'winplaodds', 'qin', 'qpl', 'fct', 'tceinv' , 'tcetop', 'tcebank', 'tri']
     lBetTypes=[ 'tceinv', 'fct', 'qin', 'qpl']
-
+    nBetTypes = len(lBetTypes)
+    
     for sType in lBetTypes:
         print(sRace)
         print(sType)
         fetch_odds(sRace,sType, sDate, sVenue,  path_to_raw)
 
-    #doesn't seem to be any faster
-    """
-    if __name__ == "__main__":
-        p1 = Process(target=fetch_odds(sRace, 'tceinv', sDate, sVenue,  path_to_directory))
-        p2 = Process(target=fetch_odds(sRace, 'fct', sDate, sVenue,  path_to_directory))
-        p3 = Process(target=fetch_odds(sRace, 'qin', sDate, sVenue,  path_to_directory))
-        p4 = Process(target=fetch_odds(sRace, 'qpl', sDate, sVenue,  path_to_directory))
-        p1.start()
-        p2.start()
-        p3.start()
-        p4.start()
-        p1.join()
-        p2.join()
-        p3.join()
-        p4.join()
 
-    """
     
     #end for loop on lBetTypes
 #end of for loop on iRace
 
-print("FINISHED FETCHING ODDS")
+end_time = time.time()
+elapsed_time = end_time - start_time
+
+
+print("FINISHED FETCHING ODDS. " + "Elapsed time in seconds: ", elapsed_time)
 print()
 print()
 

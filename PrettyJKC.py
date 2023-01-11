@@ -11,9 +11,8 @@ pd.set_option('display.max_rows',None)
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
-path_to_directory = cwd + '\\odds_files\\'
+path_to_output = cwd + '\\odds_files\\'
 
-path_to_directory = cwd + '\\odds_files\\'
 path_to_raw = cwd + '\\odds_files\\' + '\\odds_raw\\'
 
 firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_raw + 'race_parameters.txt')
@@ -31,7 +30,7 @@ for sType in [jType]:
     else:
 
         #map of Jockeys to Jockey selection numbers.
-        path_to_file = path_to_directory + 'Sim' + sThing + 'Challenge' + '.csv'
+        path_to_file = path_to_output + 'Sim' + sThing + 'Challenge' + '.csv'
         SimJockeyChallenge = pd.read_csv(path_to_file)
         print(SimJockeyChallenge)
         #drop selection that doesn't have a valid jkcNumber (like Other when there are not Others)
@@ -159,7 +158,9 @@ for sType in [jType]:
         axes[1].set_title(sTitle)
 
         #this sets the title of the set of (sub)plots
-        PrettyJKC.sort_values(by='Estimated Odds',ascending=False,inplace=True)
+        PrettyJKC.sort_values(by='Estimated Odds',ascending=True,inplace=True)
+        PrettyJKC.reset_index(drop=True, inplace=True)
+        print(PrettyJKC)
         Fave2Win = PrettyJKC[sThing][0]
         sOverallTitle = Fave2Win + ' projected to win '
         print(Fave2Win)
@@ -172,7 +173,7 @@ for sType in [jType]:
         #let's see all the Jockeys and labels on vertical axis.
         plt.tight_layout()
 
-        path_to_file = path_to_directory + sType+'_points'
+        path_to_file = path_to_output + sType+'_points'
         #plt.savefig(path_to_file, transparent=True, facecolor = fig.get_facecolor(), edgecolor='none', dpi=100) 
         #plt.savefig(path_to_file, transparent=True, facecolor = 'white', edgecolor='none', dpi=100) 
         #plt.savefig(path_to_file + '.png', transparent=False, edgecolor='none', dpi=100, format='png') 
@@ -196,7 +197,7 @@ for sType in [jType]:
   
             #replace last probablities with "The Rest"
             AllTotals = PieJKC.sum(axis=0)
-            #print(AllTotals)
+            print(AllTotals)
             #JockeyNumber  jockeyName  CurrentOdds  JockeyPoints  ExpectedPoints  Chance   Pay
             #need to add a new row for "The Rest".
             TheRest = [99, 'The Rest', 999, 0, 0, 100-AllTotals['Chance'], 999]  
@@ -224,7 +225,7 @@ for sType in [jType]:
         plt.title(sSubTitle)
 
         plt.tight_layout()
-        path_to_file = path_to_directory + sType+'_odds' + '.jpg'
+        path_to_file = path_to_output + sType+'_odds' + '.jpg'
         plt.savefig(path_to_file, transparent=True, facecolor='w')
         plt.show()
 

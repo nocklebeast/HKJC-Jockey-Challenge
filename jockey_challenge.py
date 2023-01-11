@@ -35,7 +35,7 @@ JockeyTierceChance = pd.DataFrame()
 lRaces = [*range(firstRace,lastRace+1)]
 
 #for special events like the HKIR... just hack the actual races by hand
-lRaces = [4,5,7,8]
+#lRaces = [4,5,7,8]
 for iRace in lRaces:
     sRace = str(iRace)
     #print(sRace)
