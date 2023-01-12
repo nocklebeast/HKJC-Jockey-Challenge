@@ -12,6 +12,7 @@ import os
 import shutil
 import time
 import threading
+import queue  
 
 from hkjc_functions import read_race_parameters
 from hkjc_functions import fetch_odds
@@ -32,6 +33,8 @@ from hkjc_functions import fetch_odds
 # qpl = quinella place
 # fct = forecase or exacta
 """
+
+#def_fetch_odds
 
 cwd = os.getcwd()
 print("My current directory is : " + cwd)
@@ -55,9 +58,13 @@ except OSError as error:
 #copy race_parameters into raw odds
 shutil.copyfile(path_to_file, path_to_copy)
 
+
 firstRace, lastRace, sDate, sVenue, jType = read_race_parameters(path_to_file)
 
 start_time = time.time()
+
+#put the fetch requests in the queue.
+fetch_queue = queue.Queue()
 
 for iRace in range(firstRace,lastRace+1) :
     sRace = str(iRace)
@@ -71,21 +78,44 @@ for iRace in range(firstRace,lastRace+1) :
     iThread = 0
 
     for sType in lBetTypes:
-        print("start")
-        print(sRace)
-        print(sType)
-        newThread = threading.Thread(target=fetch_odds, args=(sRace,sType, sDate, sVenue,  path_to_raw))
-        lThreads.append(newThread)
-        newThread.start()
-
-    #join above threads.
-    #https://stackoverflow.com/questions/33470760/python-threads-object-append-to-list
-    
-    for joinThread in lThreads:
-        joinThread.join()
-    
+        #print("start")
+        #print(sRace)
+        #print(sType)
+        lFetch_args = [sRace,sType, sDate, sVenue,  path_to_raw]
+        fetch_queue.put(lFetch_args)
     #end for loop on lBetTypes
 #end of for loop on iRace
+
+print(fetch_queue.qsize())
+
+#process requests maxThreads at a time.
+maxThreads = 4
+while not fetch_queue.empty():
+    nThreads = 0
+    print(nThreads, maxThreads, fetch_queue.empty())
+    
+    while nThreads <= maxThreads:
+        print(nThreads, maxThreads, fetch_queue.empty())
+        #if not fetch_queue.empty() & nThreads <= maxThreads:
+        if  nThreads <= maxThreads:
+            print(fetch_queue.qsize())
+            lFetch_args = fetch_queue.get()
+            print(fetch_queue.qsize())
+            #kkk
+            print("start: " + str(lFetch_args[0]) + ":" + lFetch_args[1])
+            newThread = threading.Thread(target=fetch_odds, args=(lFetch_args))
+            lThreads.append(newThread)
+            newThread.start()
+            nThreads += 1
+            print(nThreads)
+
+    if len(lThreads) > 0:
+        #join above threads, once we've reached max threads or nothing left in the queue.
+        print("join threads now.")
+        for joinThread in lThreads:
+            joinThread.join()
+        
+
 
 end_time = time.time()
 elapsed_time = end_time - start_time
@@ -96,3 +126,5 @@ print()
 print()
 
 
+#https://docs.python.org/3/library/queue.html
+#https://stackoverflow.com/questions/33470760/python-threads-object-append-to-list
