@@ -8,8 +8,6 @@
 #need to install gecko driver (for firefox) for windows.
 # http://www.learningaboutelectronics.com/Articles/How-to-install-geckodriver-Python-windows.php
 
-#from tracemalloc import stop
-#import urllib.request as ul
 from calendar import different_locale
 from tracemalloc import stop
 from bs4 import BeautifulSoup as soup
@@ -51,14 +49,10 @@ browser = webdriver.Firefox(options=WebDriverOptions)
 
 #later, merge race entry(jockeys) with jockey selections
 #get ALL jockey selections to get names and points of all the other jockeys.
-JockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
-print(JockeySelections)
-if JockeySelections[jType+'OtherNumber'][0] == 0:
-    OtherNumberJockey = 0
-else:
-    dfOtherNumberJockey = JockeySelections[JockeySelections[jType+'Name'] == 'Others']
-    OtherNumberJockey = dfOtherNumberJockey[jType+'OtherNumber'].loc[dfOtherNumberJockey.index[0]]
-print(OtherNumberJockey)
+
+AllJockeySelections = pd.read_csv(path_to_directory + 'AllJockeySelections' + '.csv')
+print(AllJockeySelections)
+OtherNumber = AllJockeySelections[jType+'OtherNumber'].iloc[0]
 
 """
 #sometimes no trainer challenge
@@ -106,12 +100,32 @@ for iRace in range(firstRace,lastRace+1) :
     #pageSource = browser.find_element_by_xpath("//*").get_attribute("outerHTML")    
     #print(pageSource)
 
+    #get race info (post times)
+    iPos = txtPage.find("raceInfoStroke")
+    #race date
+    jPos = txtPage.find("<nobr>", iPos+1)
+    #post time
+    iPos = txtPage.find("<nobr>", jPos+1)
+    jPos = txtPage.find("</nobr>",iPos+1)
+    #need txt between <nobr> and </nobr>
+    sPostTime = txtPage[iPos+len("<nobr>"):jPos]
+    print(sPostTime)
+
+    #write post time to file
+    path_to_file = path_to_raw  + '\\post_time_' + sRace  + '.txt'
+
+    #write page source for later (optional) processing.
+    #use encoding='utf-8' when writing chinese characters.
+    with open(path_to_file,'w',encoding='utf-8') as File:
+        File.write(sPostTime)
+        File.close()
+
+    #get jockeys (on thorse numbers)
     iPos = txtPage.find("normalRunnerList")
     jPos = txtPage.find("{",iPos+1)
     iPos = jPos
 
     jPos = txtPage.find("}]",iPos+1)
-
 
     #everything between (and including) { } for ALL the horses
     #sRunnerList = txtPage[iPos : jPos+1]
@@ -170,14 +184,15 @@ for iRace in range(firstRace,lastRace+1) :
     #be sure to not throw away "other jockeys"
     #left: use only keys from left frame, similar to a SQL left outer join; preserve key order.
     print(dfRaceEntry)
-    print(JockeySelections)
-    RaceEntryA = dfRaceEntry.merge(JockeySelections, on=jType+'Name', how='left')
+    print(AllJockeySelections)
+    RaceEntryA = dfRaceEntry.merge(AllJockeySelections, on=jType+'Name', how='left')
     print(RaceEntryA)
 
-    RaceEntryA[jType+'Number'].fillna(OtherNumberJockey,inplace=True)
+    RaceEntryA[jType+'Number'].fillna(OtherNumber,inplace=True)
     #deal with "other"
     RaceEntryA[jType+'Number'] = RaceEntryA[jType+'Number'].astype(int)
     RaceEntryA.drop([jType+'OtherNumber'], axis=1, inplace=True)
+    RaceEntryA.fillna(0, inplace=True)
     print(RaceEntryA) 
 
     """  let's have jockey only for now.
