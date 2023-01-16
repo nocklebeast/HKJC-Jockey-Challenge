@@ -10,9 +10,8 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup as soup
 import json
 
-import requests
+#import requests
 import time 
-
 
 def read_race_parameters(path_to_file: str) :
     
@@ -33,7 +32,6 @@ def read_race_parameters(path_to_file: str) :
     print(jType)
     """
     return firstRace, lastRace, sDate, sVenue, jType
-
 
 def renormalize_column(df: pd.DataFrame, sColumn: str, newColumn=''):
     AllTotals = df.sum(axis=0)  #axis=0 gives the sum of all rows of each column in the AllTotals dataframe. axis=1, sums columns for each row
@@ -91,4 +89,54 @@ def fetch_odds(RaceNo: int, sDataType: str, sRaceDate: str, sRaceVenue: str,  pa
         oddsFile.close()
 
     return
+#end def fetch_odds
+
+
+def fetch_results(RaceNo: int, sRaceDate: str, sRaceVenue: str,  path_to_write_directory: str) :
+    sRaceNo = str(RaceNo)
+
+    #https://racing.hkjc.com/racing/information/English/racing/LocalResults.aspx
+    #https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2023/01/15&Racecourse=ST&RaceNo=2
+    base_url = 'https://racing.hkjc.com/racing/information/English/racing/LocalResults.aspx' 
+
+    slashRaceDate = sRaceDate.replace("-","/")
+    sParams = 'RaceDate=' + sRaceDate + '&Racecourse=' + sRaceVenue + '&RaceNo=' + sRaceNo 
+
+
+    race_url = base_url + '?' + sParams
+    #print(race_url)
+
+    WebDriverOptions = Options()
+    WebDriverOptions.headless = True
+    
+    browser = webdriver.Firefox(options=WebDriverOptions)
+    browser.get(race_url)
+    time.sleep(10)
+    #print("browser page source")
+    #print(browser.page_source)
+    txtPage = browser.page_source
+    browser.close
+
+    print(txtPage)
+
+
+    #write text file of the string for later processing.
+    path_to_file = path_to_write_directory  + '\\results_' + sRaceNo  + '.txt'
+
+    #write page source for later (optional) processing.
+    #use encoding='utf-8' when writing chinese characters.
+    with open(path_to_file,'w',encoding='utf-8') as oddsFile:
+        oddsFile.write(txtPage)
+        oddsFile.close()
+
+    #get results status.
+    #no results or unofficial or with dividends
+
+    iPos = txtPage.find("Unofficial")
+    jPos = txtPage.find("Winning Combination", iPos+1)
+    #print(iPos,jPos)
+
+    weHaveResults = iPos > 0 or jPos > 0
+
+    return weHaveResults
 #end def fetch_odds

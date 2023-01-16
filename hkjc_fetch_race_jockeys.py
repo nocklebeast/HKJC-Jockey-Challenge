@@ -81,8 +81,7 @@ for iRace in range(firstRace,lastRace+1) :
 
     browser.get(race_url)
     #browser.get(race_url)
-    #time.sleep(13)
-    time.sleep(15)
+    time.sleep(5)
     txtPage = browser.page_source
 
     #write text file of the string for later processing.
