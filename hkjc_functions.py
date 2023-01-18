@@ -2,6 +2,8 @@
 import pandas as pd
 import os
 import shutil
+import numpy as np
+import itertools
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
@@ -89,7 +91,7 @@ def fetch_odds(RaceNo: int, sDataType: str, sRaceDate: str, sRaceVenue: str,  pa
         oddsFile.close()
 
     return
-#end def fetch_odds
+#end def 
 
 
 def fetch_results(RaceNo: int, sRaceDate: str, sRaceVenue: str,  path_to_write_directory: str) :
@@ -139,4 +141,74 @@ def fetch_results(RaceNo: int, sRaceDate: str, sRaceVenue: str,  path_to_write_d
     weHaveResults = iPos > 0 or jPos > 0
 
     return weHaveResults
-#end def fetch_odds
+#end def  
+
+
+def fetch_raceday_results(lastRace: int, sRaceDate: str, sRaceVenue: str,  path_to_write_directory: str) :
+    #this function gives the "results status" for each race (pending or unofficial results /dividends)
+    # (race has run or it hasn't run yet.)
+
+    #this page gives all the results for all the races of the day.
+    base_url = 'https://racing.hkjc.com/racing/information/English/Racing/ResultsAll.aspx' 
+    #view-source:https://racing.hkjc.com/racing/information/English/Racing/ResultsAll.aspx?RaceDate=2023/01/18
+
+    slashRaceDate = sRaceDate.replace("-","/")
+    sParams = 'RaceDate=' + slashRaceDate 
+    #+ '&Racecourse=' + sRaceVenue 
+    #+ '&RaceNo=' + sRaceNo 
+
+    race_url = base_url + '?' + sParams
+    print(race_url)
+
+    WebDriverOptions = Options()
+    WebDriverOptions.headless = True
+    
+    browser = webdriver.Firefox(options=WebDriverOptions)
+    browser.get(race_url)
+    time.sleep(10)
+    #print("browser page source")
+    #print(browser.page_source)
+    txtPage = browser.page_source
+    browser.close
+
+    #print(txtPage)
+
+    #write text file of the string for later possible processing.
+    path_to_file = path_to_write_directory  + '\\raceday_results' + '.txt'
+
+    #write page source for later (optional) processing.
+    #use encoding='utf-8' when writing chinese characters.
+    with open(path_to_file,'w',encoding='utf-8') as oddsFile:
+        oddsFile.write(txtPage)
+        oddsFile.close()
+
+    #get results status.
+    #no results or unofficial or with dividends
+
+    #create an array of zeros... we'll turn 'em into the position of that info in the 
+    # web page. 
+    RacePos = [0]*(lastRace+2)
+
+
+    for iRace in range(1,lastRace+1):
+        sRace = str(iRace)
+        RacePos[iRace] = txtPage.find("Race " + sRace)
+        print(iRace, RacePos[iRace])
+    RacePos[lastRace+1] = txtPage.find("Dividend Note")
+    print(lastRace+1, RacePos[lastRace+1])
+
+    RaceResults = [0]*(lastRace+1)
+    for iRace in range(1,lastRace+1):
+        sRace = str(iRace)
+        uPos = txtPage.find("Unofficial",RacePos[iRace],RacePos[iRace+1])
+        dPos = txtPage.find("Winning Combination",RacePos[iRace],RacePos[iRace+1])
+        
+        RaceResults[iRace] = uPos > 0 or dPos > 0
+        print(iRace, uPos, dPos, RaceResults[iRace])
+
+    dfRaceResults = pd.DataFrame(RaceResults, columns=['isRaceFinished'])
+    dfRaceResults = dfRaceResults.rename_axis('Race').reset_index()
+    dfRaceResults = dfRaceResults[dfRaceResults['Race'] > 0]
+
+    return dfRaceResults
+#end def  

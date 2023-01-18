@@ -137,7 +137,7 @@ for iRace in range(firstRace,lastRace+1) :
     # is there an easy way to json to data frame?
     # need to map horse number "num" with "jkcName"
     lRunners = sRunnerList.split("},{")
-    print(lRunners[3])
+    
 
     aRunners = np.array(lRunners)
     #print(aRunners)
